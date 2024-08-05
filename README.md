@@ -12,6 +12,7 @@ If the user uploads an image, the image will display on the screen and one of tw
 If the user instead presses Turn on Camera, they will be asked for permission to turn on the camera of their computer. As soon as a rubber duck enters the periphery of the camer
 
 I'm thinking to build the web application in Flask but eventually maybe migrate it to Django. But Flask for now. Enough vision to get me going is that there will be an index route and one route for each option represented by each button?
+Since I am far from a front-end developer, the style.css is rather shamelessly copied from the Finance problem and modified haha.
 The camera detection will take heavy inspiration from this video: https://www.youtube.com/watch?v=CeTR_-ALdRw
 The image recognition takes inspiration from the second project in this video: https://www.youtube.com/watch?v=akeSJBEWr3w
 I will follow NeuralNine's video pretty closely to set up the camera classifier but as for the Image Recognition using Amazon Rekognition, I will mostly use the help of ChatGPT. I believe the scope of this project is just enough! :)
