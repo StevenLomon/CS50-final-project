@@ -6,6 +6,9 @@ class Camera:
         if not self.camera.isOpened(): # If there is an error of any sorts
             raise ValueError("Unable to open camera :(")
         
+        self.width = self.camera(cv.CAP_PROP_FRAME_WIDTH)
+        self.height = self.camera(cv.CAP_PROP_FRAME_HEIGHT)
+        
     def __del__(self): # Close camera when application is closed
         if self.camera.isOpened():
             self.camera.release()
