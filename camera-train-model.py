@@ -21,7 +21,7 @@ class App:
         self.init.gui()
 
         self.delay = 15
-        # self.update()
+        self.update()
 
         self.window.attributes('-topmost', True)
         self.window.mainloop()
@@ -32,6 +32,9 @@ class App:
 
         self.btn_toggleauto = tk.Button(self.window, text="Auto Prediction", width=50, command=self.auto_predict_toggle)
         self.btn_toggleauto.pack(anchor=tk.CENTER, expand=True)
+
+        self.btn_save_frame = tk.Button(self.window, text="Save frame for training", width=50, command=lambda: self.save_frame)
+        self.btn_save_frame.pack(anchor=tk.CENTER, expand=True)
 
         self.btn_train = tk.Button(self.window, text="Train Model", width=50, command=lambda: self.model.train_model(self.counters))
         self.btn_train.pack(anchor=tk.CENTER, expand=True)
@@ -49,7 +52,7 @@ class App:
     def auto_predict_toggle(self):
         self.auto_predict = not self.auto_predict # Negating what it already is, chaning its current state
 
-    def save_for_class(self):
+    def save_frame(self):
         ret, frame = self.camera.get_frame()
         if not os.path.exists('ducks'):
             os.mkdir('ducks')
@@ -66,3 +69,28 @@ class App:
 
         # Increase the counter to continue keeping track of file names
         self.counter += 1
+
+    def reset(self): # Delete training images and reset everything back to default values
+        for file in os.listdir("ducks"):
+            file_path = os.path.join("ducks", file)
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+
+        self.counter = 1
+        # self.model = model.Model()
+
+    # For auto-predict
+    def update(self):
+        if self.auto_predict:
+            # self.predict()
+            pass
+        
+        ret, frame = self.camera.get_frame()
+
+        if ret:
+            # Convert the frame from the camera to a Tk Image
+            self.photo = PIL.ImageTk(image=PIL.Image.fromarray(frame))
+            self.canvas.create_image(0,0, image=self.photo, anchor=tk.NW)
+
+        # Recursively call the function over and over given a delay
+        self.window(self.delay, self.update)
