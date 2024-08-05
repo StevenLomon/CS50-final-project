@@ -16,4 +16,6 @@ The camera detection will take heavy inspiration from this video: https://www.yo
 The image recognition takes inspiration from the second project in this video: https://www.youtube.com/watch?v=akeSJBEWr3w
 I will follow NeuralNine's video pretty closely to set up the camera classifier but as for the Image Recognition using Amazon Rekognition, I will mostly use the help of ChatGPT. I believe the scope of this project is just enough! :)
 
+I hope that istherearubberduckinthisimage.com is available to buy!
+
 Try it out here: 
