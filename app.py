@@ -21,5 +21,13 @@ def after_request(response):
 def index():
     return render_template("index.html")
 
+@app.route("/image")
+def image():
+    return render_template("image.html")
+
+@app.route("/camera")
+def image():
+    return render_template("camera.html")
+
 # if __name__ == '__main__':
 #     app.run(debug=True)
