@@ -1,10 +1,10 @@
 import cv2 as cv
 
 class Camera:
-    def __init__(self):
-        self.camera = cv.VideoCapture(0) # 0 specifies the first webcam available on the computer
-        if not self.camera.isOpened(): # If there is an error of any sorts
-            raise ValueError("Unable to open camera :(")
+    def __init__(self, index=0):
+        self.camera = cv.VideoCapture(index)
+        if not self.camera.isOpened():
+            raise ValueError(f"Unable to open camera with index {index} :(")
         
         self.width = self.camera(cv.CAP_PROP_FRAME_WIDTH)
         self.height = self.camera(cv.CAP_PROP_FRAME_HEIGHT)

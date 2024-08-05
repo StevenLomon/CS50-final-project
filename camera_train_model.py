@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import simpledialog
 import cv2 as cv
 import PIL.Image, PIL.ImageTk
-import camera
+import camera, model
 
 class App:
     def __init__(self, window=tk.Tk(), window_title="Duck Classifier"):
@@ -13,7 +13,7 @@ class App:
         # An int to keep track of the name of the file name
         self.counters = 1
 
-        # self.model = 
+        self.model = model.Model()
 
         self.auto_predict = False
 
@@ -77,13 +77,12 @@ class App:
                 os.unlink(file_path)
 
         self.counter = 1
-        # self.model = model.Model()
+        self.model = model.Model()
 
     # For auto-predict
     def update(self):
         if self.auto_predict:
-            # self.predict()
-            pass
+            self.predict()
         
         ret, frame = self.camera.get_frame()
 
@@ -94,3 +93,14 @@ class App:
 
         # Recursively call the function over and over given a delay
         self.window(self.delay, self.update)
+
+    def predict(self):
+        frame = self.camera.get_frame()
+        prediction = self.model.predict(frame)
+
+        if prediction == 1:
+            self.class_label.config(text="Duck")
+            return "Duck"
+        else:
+            self.class_label.config(text="No duck")
+            return "No duck"
