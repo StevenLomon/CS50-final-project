@@ -19,30 +19,23 @@ response = rekognition.detect_labels(
         },
     },
     MaxLabels = 10,
-    MinConfidence = 10
+    MinConfidence = 50
 )
 
 labels = response['Labels']
 # print(labels)
 
-# Initialize all confidence values as None
-duck_conf = toy_conf = rubber_duck_conf = None
+# Extract confidence values from labels
+confidence_values = {label['Name']: label.get('Confidence') for label in labels}
 
-# Get duck confidence and toy confidence
-duck_dict = [dict for dict in labels if dict.get('Name') == 'Duck']
-if duck_dict:
-    duck_conf = duck_dict[0].get('Confidence')
+# Get the confidence values for 'Duck' and 'Toy', defaulting to None if not present
+duck_conf = confidence_values.get('Duck')
+toy_conf = confidence_values.get('Toy')
 
-toy_dict = [dict for dict in labels if dict.get('Name') == 'Toy']
-if toy_dict:
-    toy_conf = toy_dict[0].get('Confidence')
-
-# Calculate rubber duck confidence
-if duck_conf and toy_conf:
+# Calculate rubber duck confidence if both 'Duck' and 'Toy' are found
+if duck_conf is not None and toy_conf is not None:
     rubber_duck_conf = (duck_conf + toy_conf) / 2
-
-if rubber_duck_conf:
-    print(f"Rubber duck detected with {rubber_duck_conf}% certainty! :)")
+    print(f"Rubber duck detected with {rubber_duck_conf:.2f}% certainty! :)")
 else:
     print("No rubber duck detected :(")
 
