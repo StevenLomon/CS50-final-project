@@ -19,4 +19,16 @@ I will follow NeuralNine's video pretty closely to set up the camera classifier 
 
 I hope that istherearubberduckinthisimage.com is available to buy!
 
+Journal:
+An S3 Bucket was created
+An IAM User was created that has full access to S3 and AWS Rekognition
+Since I realized mid-project that AWS Rekognition is not available in the Stockholm region, I decided to re-create the Bucket and use Frankfurt (eu-central-1) since Stockholm and Frankfurt are in the same time zone. A list of service availability by region can be found here:
+https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/
+
+After succesfully setting up and implementing Rekognition and playing around to see which labels it can and can’t snap up, I found that “Rubber duck” is not a label, but it can detect “Duck” with 98.51734924316406 confidence and “Toy” with 57.209102630615234 confidence. This was my ticket haha; Duck + Toy = Rubber duck
+
+I wrote some code to implement this logic of combining the labels of Duck and Toy, taking the average of their confidence
+to get Rubber Duck confidence haha!
+
+
 Try it out here: 
