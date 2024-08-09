@@ -56,3 +56,10 @@ tbody tr:nth-of-type(odd) {
 .btn:hover {
     background-color: #0056b3;
 }
+
+/* Makes the input take up the full width. Also written by ChatGPT */
+.file-input {
+    display: block;
+    max-width: 300px;  /* Adjust this value to control the width */
+    margin: 0 auto 10px auto;  /* Center horizontally and add bottom margin */
+}
