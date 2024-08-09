@@ -1,4 +1,4 @@
-from flask import Flask, flash, redirect, render_template, request, session
+from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
 
 # Configure application
@@ -28,16 +28,23 @@ def image():
         # Ensure valid image was uploaded
 
         # Redirect user to result page
-        return redirect("/")
+        return redirect(url_for('result', result_id=result.id))
     
     # User reached route via GET (as by clicking the Upload Image Button in Index)
     else:
         print("Handling GET request")
         return render_template("image.html")
+    
+@app.route("/result/<result_id>")
+def result(result_id):
+    # Fetch result using result_id
+    return render_template("result.html", result=result)
 
 @app.route("/camera")
 def camera():
     return render_template("camera.html")
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
