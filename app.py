@@ -21,13 +21,23 @@ def after_request(response):
 def index():
     return render_template("index.html")
 
-@app.route("/image")
+@app.route("/image", methods=['GET', 'POST'])
 def image():
-    return render_template("image.html")
+    if request.method == "POST":
+        print("Handling POST request")
+        # Ensure valid image was uploaded
+
+        # Redirect user to result page
+        return redirect("/")
+    
+    # User reached route via GET (as by clicking the Upload Image Button in Index)
+    else:
+        print("Handling GET request")
+        return render_template("image.html")
 
 @app.route("/camera")
-def image():
+def camera():
     return render_template("camera.html")
 
-# if __name__ == '__main__':
-#     app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)
