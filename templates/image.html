@@ -1,7 +1,7 @@
 {% extends "boilerplate.html" %}
 
 {% block title %}
-    Index
+    Image Upload
 {% endblock %}
 
 {% block main %}
@@ -10,8 +10,11 @@
     </div>
     <div class="container">
         <div class="section">
-            <button>Upload Image</button>
-            <button>Turn on Camera</button>
+            <!-- Form to allow user to upload an image -->
+             <form action="/image.html" method="post" enctype="multipart/form-data">
+                <input type="file" name="image" accept="image/*" required>
+                <button type="submit">Upload Image</button>
+             </form>
         </div>
     </div>
 {% endblock %}

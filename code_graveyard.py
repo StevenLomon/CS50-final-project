@@ -13,3 +13,21 @@
 # # Calculate rubber duck confidence
 # if duck_conf and toy_conf:
 #     rubber_duck_conf = (duck_conf + toy_conf) / 2
+
+# duck_conf = duck_dict.get('Confidence')
+# print(duck_dict)
+
+# duck_dict = [label for label in labels if label['Name'.lower() == "duck"]]
+# duck_conf = duck_dict.get('Confidence')
+
+# toy_dict = [label for label in labels if label['Name'].lower() == "Toy"]
+# toy_conf = toy_dict.get('Confidence')
+
+# print(duck_conf)
+# print(toy_conf)
+
+# Filter labels to only include those who include the word "duck"
+# rubber_labels = [label for label in labels if "duck" in label['Name'].lower()]
+
+
+# print(labels)
