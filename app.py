@@ -1,6 +1,7 @@
 import os
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
+from cs50 import SQL
 
 # For image validation
 from werkzeug.utils import secure_filename
@@ -10,6 +11,7 @@ import imghdr
 import uuid # For unique identifiers keeping result pages unique
 import boto3 # For S3 integration
 from helpers import apology
+from rekognition import get_rubber_duck_confidence
 
 # Configure application
 app = Flask(__name__)
@@ -97,7 +99,10 @@ def image():
             flash(f'An error occurred: {str(e)}')
             return redirect(request.url)
         
-        # Process the image (interaction with Rekognition)
+        # Get rubber duck confidence via interaction with Rekognition
+        rubber_duck_conf = get_rubber_duck_confidence(filename)
+        if not rubber_duck_conf:
+            return apology("Could not fetch rubber duck confidence. Please try again later", 400)
 
         # Store results (in database?)
 
