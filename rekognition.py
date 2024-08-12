@@ -52,4 +52,4 @@ def get_rekognition_data(filename):
         # print(f"Rubber duck detected with {rubber_duck_conf:.2f}% certainty! :)")
     else:
         # print("No rubber duck detected :(")
-        return None
+        return {}

@@ -1,4 +1,4 @@
-import os, sqlite3
+import os, sqlite3, json
 from datetime import datetime
 from flask import Flask, g, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
@@ -116,18 +116,18 @@ def image():
             flash(f'An error occurred: {str(e)}')
             return redirect(request.url)
         
-        # Booleans to store whether a duck is found in the picture or not and whether or not Rekognition has
-        # provided us with a bounding box. Both default to 0
-        duck_found = 0
-        bounding_box_available = 0
+        # Default values
+        duck_found = bounding_box_available = 0
+        rubber_duck_conf = bounding_box = bounding_box_data_json = None
 
         # Get rubber duck confidence score via interaction with Rekognition
         rek_data = get_rekognition_data(filename)
-        if not rek_data:
+        if not isinstance(rek_data, dict):
             return apology("Unexpected exception when getting data from Rekognition. Please try again", 400)
         
-        rubber_duck_conf = rek_data['rubber_duck_conf']
-        bounding_box = rek_data['bounding_box']
+        if rek_data: # If it's not an empty dictionary
+            rubber_duck_conf = rek_data.get('rubber_duck_conf')
+            bounding_box = rek_data.get('bounding_box')
 
         print(f"Rubber duck confidence score: {rubber_duck_conf}")
         print(f"Bounding box: {bounding_box}")
@@ -146,8 +146,11 @@ def image():
         s3_url = f"https://{bucket_name}.s3.eu-central-1.amazonaws.com/{filename}"
         s3_url_bb = None
         if bounding_box_available:
+            # Convert bounding_box to JSON string if it's not a primitive type
+            bounding_box_data_json = json.dumps(bounding_box)
             s3_url_bb = f"https://{bucket_name}.s3.eu-central-1.amazonaws.com/{filename}-bb"
-        cur.execute("INSERT INTO duck_results (id, duck_found, bounding_box_available, confidence_score, bounding_box_data, s3_key, s3_url, s3_url_bounding_box) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (result_id, duck_found, bounding_box_available, rubber_duck_conf, bounding_box, filename, s3_url, s3_url_bb))
+            
+        cur.execute("INSERT INTO duck_results (id, duck_found, bounding_box_available, confidence_score, bounding_box_data, s3_key, s3_url, s3_url_bounding_box) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (result_id, duck_found, bounding_box_available, rubber_duck_conf, bounding_box_data_json, filename, s3_url, s3_url_bb))
         db.commit()
 
         # Redirect user to result page
@@ -169,7 +172,8 @@ def result(result_id):
     if not query_data:
         return apology("Result not found", 404)
 
-    result_data = {'duck_found': query_data[1], 'conf_score': query_data[2], 's3_url': query_data[4]}
+    result_data = {'duck_found': query_data[1], 'bounding_box_available': query_data[2], 
+                   'conf_score': query_data[3], 's3_url': query_data[6], 's3_url_bb': query_data[7]}
 
     return render_template("result.html", result=result_data)
 
