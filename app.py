@@ -11,7 +11,7 @@ import imghdr
 import uuid # For unique identifiers keeping result pages unique
 import boto3 # For S3 integration
 from helpers import apology
-from rekognition import get_rubber_duck_confidence
+from rekognition import get_rubber_duck_confidence_score
 
 # Configure application
 app = Flask(__name__)
@@ -99,8 +99,8 @@ def image():
             flash(f'An error occurred: {str(e)}')
             return redirect(request.url)
         
-        # Get rubber duck confidence via interaction with Rekognition
-        rubber_duck_conf = get_rubber_duck_confidence(filename)
+        # Get rubber duck confidence score via interaction with Rekognition
+        rubber_duck_conf = get_rubber_duck_confidence_score(filename)
         if not rubber_duck_conf:
             return apology("Could not fetch rubber duck confidence. Please try again later", 400)
 

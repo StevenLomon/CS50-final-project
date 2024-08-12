@@ -8,7 +8,7 @@ bucket_name = 'cs50-final-project-rubber-duck-bucket'
 # # Test to upload an image PASSED
 # s3.upload_file('rubber-duck-2.jpg', 'cs50-final-project-rubber-duck-bucket', 'rubber-duck-2.jpg')
 
-def get_rubber_duck_confidence(filename):
+def get_rubber_duck_confidence_score(filename):
     # Create an AWS Rekognition object
     rekognition = boto3.client('rekognition', region_name='eu-central-1')
 
