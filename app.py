@@ -1,4 +1,5 @@
 import os, sqlite3
+from datetime import datetime
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
 
@@ -31,7 +32,7 @@ cur = conn.cursor()
 
 results_table_query = """
             CREATE TABLE IF NOT EXISTS
-            duck_results (id INTEGER PRIMARY KEY, time TEXT, confidence_score FLOAT, s3_path TEXT)
+            duck_results (id INTEGER PRIMARY KEY, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, confidence_score FLOAT NOT NULL, s3_key TEXT NOT NULL, s3_url TEXT)
             """
 
 cur.execute(results_table_query)
@@ -114,11 +115,12 @@ def image():
         rubber_duck_conf = get_rubber_duck_confidence_score(filename)
         if not rubber_duck_conf:
             return apology("Could not fetch rubber duck confidence. Please try again later", 400)
-
-        # Store results (in database?)
-
+        
         # Generate unique result ID
         result_id = str(uuid.uuid4())
+
+        # Store results in our database
+        cur.execute("INSERT INTO duck_results(?, ?, ?, ?)", result_id, datetime.now(), rubber_duck_conf, )
 
         # Redirect user to result page
         return redirect(url_for('result', result_id=result_id))
