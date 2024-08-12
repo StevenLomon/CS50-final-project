@@ -35,5 +35,12 @@ correctly to the image route and that the image route can be reached by clicking
 lesson to take away from being stuck here for a little while is that the actions in the .html files should link to the
 routes, not html files
 
+All image validation was added and then instead of saving the image locally to an uploads folder, the image is saved to 
+our S3 bucket like we tried out in rekognition.py. Two things of importance:
+1. I had to use s3.upload_fileobj and not s3.upload_file since it's a file uploaded through a Flask form and not stored
+locally on my filesystem. In a web application, it's more secure to handle files in memory (using file-like objects) rather than saving them to disk, which might expose them to unintended access!
+2. It was important that I added a file.seek(0) before uploading the image. I managed to upload an image to S3 before adding
+that little piece of code and the image was corrupted and couldn't be opened
+
 
 Try it out here: 

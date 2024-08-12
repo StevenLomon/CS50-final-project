@@ -77,9 +77,14 @@ def image():
         except (IOError, SyntaxError) as e:
             return apology("Invalid image file", 400)
         
+        # Ensure the file pointer is at the beginning of the file before upload
+        file.seek(0)
+
         # If we've reached this point of the code, save and process the file securely
         filename = secure_filename(file.filename)
         # file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+        # Upload the image to our S3 bucket
         try:
             s3.upload_fileobj(file, bucket_name, filename)
             flash('File uploaded successfully!')
@@ -88,7 +93,7 @@ def image():
             return redirect(request.url)
 
         # Redirect user to result page
-        flash("Image validated and sent to S3 bucket!")
+        # flash("Image validated and sent to S3 bucket!")
         return redirect("/")
         #return redirect(url_for('result', result_id=result.id))
     
