@@ -48,7 +48,7 @@ Once an image is completely validated and uploaded to the S3 bucket we
 3. Generate a unique result ID using uuid4
 4. Redirect to the result page where the result will be fetch using the resultID
 
-
+The SQLite db connection was set up without the CS50 training wheels and a duck_results table was created
 
 
 Try it out here: 

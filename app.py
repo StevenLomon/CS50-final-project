@@ -1,4 +1,4 @@
-import os
+import os, sqlite3
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
 
@@ -24,6 +24,18 @@ app.config['DEBUG'] = True
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 
 Session(app)
+
+# Set up database
+conn = sqlite3.connect("rubber_duck.db")
+cur = conn.cursor()
+
+results_table_query = """
+            CREATE TABLE IF NOT EXISTS
+            duck_results (id INTEGER PRIMARY KEY, time TEXT, confidence_score FLOAT, s3_path TEXT)
+            """
+
+cur.execute(results_table_query)
+conn.commit()
 
 # Create an S3 object for file programmatic image upload to the bucket
 s3 = boto3.client('s3')
