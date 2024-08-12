@@ -36,4 +36,4 @@ def apology(message, code=400):
 # Very similar to USD in the Finance problem
 def conf(value):
     """Formats confidence score value to two decimals."""
-    return f"{value:,.2f}"
+    return f"{value:,.2f}%"
