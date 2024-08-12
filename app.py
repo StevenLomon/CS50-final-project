@@ -150,18 +150,14 @@ def result(result_id):
     cur = db.cursor()
 
     cur.execute("SELECT * FROM duck_results WHERE id=?", (result_id,))
-    result_data = cur.fetchone()
-    # Since all data is NOT NULL, we can be confident that the tuple positions will always be the same
-    conf_score = result_data[1]
-    s3_url = result_data[3]
+    query_data = cur.fetchone()
 
-    print(f"Confidence score: {conf_score}")
-    print(f"S3 URL: {s3_url}")
-
-    if not result_data:
+    if not query_data:
         return apology("Result not found", 404)
 
-    return render_template("result.html", conf_score=conf_score, s3_url=s3_url)
+    result_data = {'duck_found': query_data[1], 'conf_score': query_data[2], 's3_url': query_data[4]}
+
+    return render_template("result.html", result=result_data)
 
 @app.route("/camera")
 def camera():
