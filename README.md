@@ -56,5 +56,9 @@ To display the uploaded image I had to enable public read as a Bucket Policy for
 
 After being able to display succesful results where I've uploaded an image of an actual rubber duck came the other scenario when a rubber duck is not in the picture. After some consulting and reflecting, I decided to change the table schema. A new column duck_found was added which will be either 0 or 1 and NOT NULL will be removed from the confidence_score column. This allows for an if statement in the result.html that uses the duck_found variable
 
+Next up is bounding boxes. At this stage I also observed that Rekognition is more confident detecting "Bird" rather than "Duck" when I upload something that clearly is a rubber duck. So I decided to pivot my approac and have Rubber duck confidence be made up of Toy confidence and Bird confidence. Still a rubber duck if you ask me haha! I also changed the name of the function, changed it to have it return a dict and started coding to extract the bounding box data. This is the data that will be used together with matplot lib to draw out the bounding boxes in the images that the use uploads for the final result
+
+To get started with drawing the bounding boxes in matplot lib...
+
 
 Try it out here: 

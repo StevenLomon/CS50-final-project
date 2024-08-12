@@ -8,7 +8,7 @@ bucket_name = 'cs50-final-project-rubber-duck-bucket'
 # # Test to upload an image PASSED
 # s3.upload_file('rubber-duck-2.jpg', 'cs50-final-project-rubber-duck-bucket', 'rubber-duck-2.jpg')
 
-def get_rubber_duck_confidence_score(filename):
+def get_rekognition_data(filename):
     # Create an AWS Rekognition object
     rekognition = boto3.client('rekognition', region_name='eu-central-1')
 
@@ -20,24 +20,33 @@ def get_rubber_duck_confidence_score(filename):
                 'Name': filename
             },
         },
-        MaxLabels = 10,
-        MinConfidence = 50
+        MaxLabels = 6,
+        MinConfidence = 60
     )
 
     labels = response['Labels']
     print(f"Rekognition labels: {labels}")
 
-    # Extract confidence values from labels
+    # Extract confidence values and bounding boxes from labels using dictionary comprehension
     confidence_values = {label['Name']: label.get('Confidence') for label in labels}
+    bounding_box = {
+        label['Name']: [
+            instance['BoundingBox'] for instance in label.get('Instances', [])
+        ]
+        for label in labels if label.get('Instances')
+    }
 
-    # Get the confidence values for 'Duck' and 'Toy', defaulting to None if not present
-    duck_conf = confidence_values.get('Duck')
+    # Get the confidence values for 'Toy' and 'Bird' (I've observerd that it often has larger confidence score than "Duck"), 
+    # defaulting to None if not present
     toy_conf = confidence_values.get('Toy')
+    bird_conf = confidence_values.get('Bird')
 
     # Calculate rubber duck confidence if both 'Duck' and 'Toy' are found
-    if duck_conf is not None and toy_conf is not None:
-        rubber_duck_conf = (duck_conf + toy_conf) / 2
-        return rubber_duck_conf
+    if toy_conf is not None and bird_conf is not None:
+        rubber_duck_conf = (toy_conf + bird_conf) / 2
+
+        # Return rubber duck confidence score and bounding box data as a dictionary
+        return {'rubber_duck_conf': rubber_duck_conf, 'bounding_box': bounding_box}
         # print(f"Rubber duck detected with {rubber_duck_conf:.2f}% certainty! :)")
     else:
         # print("No rubber duck detected :(")

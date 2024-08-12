@@ -12,7 +12,7 @@ import uuid # For unique identifiers keeping result pages unique
 import boto3 # For S3 integration
 # import threading # For database thread safety
 from helpers import apology, conf
-from rekognition import get_rubber_duck_confidence_score
+from rekognition import get_rekognition_data
 
 # Configure application
 app = Flask(__name__)
@@ -116,12 +116,21 @@ def image():
             flash(f'An error occurred: {str(e)}')
             return redirect(request.url)
         
-        # Boolean to store whether a duck is found in the picture or not. Defaults to 0
+        # Booleans to store whether a duck is found in the picture or not and whether or not Rekognition has
+        # provided us with a bounding box. Both default to 0
         duck_found = 0
+        bounding_box_available = 0
 
         # Get rubber duck confidence score via interaction with Rekognition
-        rubber_duck_conf = get_rubber_duck_confidence_score(filename)
+        rek_data = get_rekognition_data(filename)
+        if not rek_data:
+            return apology("Unexpected exception when getting data from Rekognition. Please try again", 400)
+        
+        rubber_duck_conf = rek_data['rubber_duck_conf']
+        bounding_box = rek_data['bounding_box']
+
         print(f"Rubber duck confidence score: {rubber_duck_conf}")
+        print(f"Bounding box: {bounding_box}")
         if rubber_duck_conf is not None:
             duck_found = 1
         
@@ -133,7 +142,7 @@ def image():
         cur = db.cursor()
 
         s3_url = f"https://{bucket_name}.s3.eu-central-1.amazonaws.com/{filename}"
-        cur.execute("INSERT INTO duck_results (id, duck_found, confidence_score, s3_key, s3_url) VALUES (?, ?, ?, ?, ?)", (result_id, duck_found, rubber_duck_conf, filename, s3_url))
+        cur.execute("INSERT INTO duck_results (id, duck_found, confidence_score, bounding_box, s3_key, s3_url) VALUES (?, ?, ?, ?, ?)", (result_id, duck_found, rubber_duck_conf, filename, s3_url))
         db.commit()
 
         # Redirect user to result page
