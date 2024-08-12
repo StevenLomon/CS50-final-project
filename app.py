@@ -1,6 +1,6 @@
 import os, sqlite3
 from datetime import datetime
-from flask import Flask, flash, redirect, render_template, request, session, url_for
+from flask import Flask, g, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
 
 # For image validation
@@ -10,6 +10,7 @@ import imghdr
 
 import uuid # For unique identifiers keeping result pages unique
 import boto3 # For S3 integration
+import threading # For database thread safety
 from helpers import apology
 from rekognition import get_rubber_duck_confidence_score
 
@@ -19,24 +20,44 @@ app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 app.config['DEBUG'] = True
-
-# App config code by ChatGPT
-# Set maximum file size (e.g., 5 MB)
-app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
+app.config['DATABASE'] = 'rubber_duck.db'
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024 # Set maximum file size (e.g., 5 MB)
 
 Session(app)
 
-# Set up database
-conn = sqlite3.connect("rubber_duck.db")
-cur = conn.cursor()
+# Set up SQLite database
 
-results_table_query = """
-            CREATE TABLE IF NOT EXISTS
-            duck_results (id INTEGER PRIMARY KEY, confidence_score FLOAT NOT NULL, s3_key TEXT NOT NULL, s3_url TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
-            """
+# Thread-local storage for the database connection
+def get_db():
+    if not hasattr(g, '_database'):
+        g._database = sqlite3.connect(app.config['DATABASE'])
+    return g._database
 
-cur.execute(results_table_query)
-conn.commit()
+@app.before_first_request
+def initialize_database():
+    db = get_db()
+    cur = db.cursor()
+
+    results_table_query = """
+        CREATE TABLE IF NOT EXISTS
+        duck_results (
+            id INTEGER PRIMARY KEY,
+            confidence_score FLOAT NOT NULL,
+            s3_key TEXT NOT NULL,
+            s3_url TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """
+
+    cur.execute(results_table_query)
+    db.commit()
+
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
+
 
 # Create an S3 object for file programmatic image upload to the bucket
 s3 = boto3.client('s3')
@@ -121,7 +142,7 @@ def image():
 
         # Store results in our database
         s3_url = f"https://{bucket_name}.s3.eu-central-1.amazonaws.com/{filename}"
-        cur.execute("INSERT INTO duck_results(?, ?, ?, ?, ?)", result_id, rubber_duck_conf, filename, s3_url)
+        cur.execute("INSERT INTO duck_results (id, confidence_score, s3_key, s3_url) VALUES (?, ?, ?, ?)", (result_id, rubber_duck_conf, filename, s3_url))
         conn.commit()
 
         # Redirect user to result page
@@ -132,12 +153,10 @@ def image():
         return render_template("image.html")
     
 @app.route("/result/<result_id>")
-def result(result_id):
-    def fetch_result():
-        return True
-    
+def result(result_id):    
     # Fetch result using result_id
-    result_data = fetch_result(result_id)  # Implement this function
+    result_data = cur.execute("SELECT * FROM duck_results WHERE id = ?", result_id)
+    print(result_data)
 
     if not result_data:
         return apology("Result not found", 404)
