@@ -5,7 +5,12 @@
 {% endblock %}
 
 {% block main %}
-    <img class="border img-fluid max-width-400" src="{{ result['s3_url'] }}">
+    {% if result['bounding_box_available'] %}
+        <img class="border img-fluid max-width-400" src="{{ result['s3_url_bb'] }}">
+    {% else %}
+        <img class="border img-fluid max-width-400" src="{{ result['s3_url'] }}">
+    {% endif %} 
+
     {% if result['duck_found'] %}
         <p>Rubber duck found! With confidence {{ result['conf_score'] | conf }}</p>
     {% else %}

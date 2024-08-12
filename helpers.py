@@ -49,14 +49,25 @@ def draw_bounding_boxes(image_path, bounding_boxes, output_file):
     image = Image.open(image_path)
     draw = ImageDraw.Draw(image)
     
+    # Debug: Print image dimensions
+    print(f"Image dimensions: {image.width}x{image.height}")
+    
     # Draw bounding boxes
-    for box in bounding_boxes:
+    for i, box in enumerate(bounding_boxes):
         left = box['Left'] * image.width
         top = box['Top'] * image.height
         width = box['Width'] * image.width
         height = box['Height'] * image.height
         
+        # Debug: Print bounding box dimensions
+        print(f"Bounding Box {i}: left={left}, top={top}, width={width}, height={height}")
+        
+        # Draw rectangle on the image
         draw.rectangle([left, top, left + width, top + height], outline='red', width=3)
     
     # Save the image with bounding boxes
-    image.save(output_file)
+    try:
+        image.save(output_file)
+        print(f"Image with bounding boxes saved as: {output_file}")
+    except Exception as e:
+        print(f"Error saving image: {e}")
