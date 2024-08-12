@@ -10,7 +10,7 @@ import imghdr
 
 import uuid # For unique identifiers keeping result pages unique
 import boto3 # For S3 integration
-import threading # For database thread safety
+# import threading # For database thread safety
 from helpers import apology, conf
 from rekognition import get_rubber_duck_confidence_score
 
@@ -116,11 +116,14 @@ def image():
             flash(f'An error occurred: {str(e)}')
             return redirect(request.url)
         
+        # Boolean to store whether a duck is found in the picture or not. Defaults to 0
+        duck_found = 0
+
         # Get rubber duck confidence score via interaction with Rekognition
         rubber_duck_conf = get_rubber_duck_confidence_score(filename)
         print(f"Rubber duck confidence score: {rubber_duck_conf}")
-        if not rubber_duck_conf:
-            return apology("Could not fetch rubber duck confidence. Please try again later", 400)
+        if rubber_duck_conf is not None:
+            duck_found = 1
         
         # Generate unique result ID
         result_id = str(uuid.uuid4())
@@ -130,7 +133,7 @@ def image():
         cur = db.cursor()
 
         s3_url = f"https://{bucket_name}.s3.eu-central-1.amazonaws.com/{filename}"
-        cur.execute("INSERT INTO duck_results (id, confidence_score, s3_key, s3_url) VALUES (?, ?, ?, ?)", (result_id, rubber_duck_conf, filename, s3_url))
+        cur.execute("INSERT INTO duck_results (id, duck_found, confidence_score, s3_key, s3_url) VALUES (?, ?, ?, ?, ?)", (result_id, duck_found, rubber_duck_conf, filename, s3_url))
         db.commit()
 
         # Redirect user to result page

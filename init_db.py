@@ -8,7 +8,8 @@ def initialize_database():
         CREATE TABLE IF NOT EXISTS
         duck_results (
             id TEXT PRIMARY KEY,
-            confidence_score FLOAT NOT NULL,
+            duck_found BOOLEAN NOT NULL,
+            confidence_score FLOAT,
             s3_key TEXT NOT NULL,
             s3_url TEXT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

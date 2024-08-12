@@ -54,5 +54,7 @@ auto-incremental integer. I also had to consult with ChatGPT on how to deal with
 
 To display the uploaded image I had to enable public read as a Bucket Policy for my S3 bucket. Since this is not in production and just a rather silly project, this is okay. I applied a max width of 400 pixels to the displayed uploaded picture and I also added a custom jinja filter that is used when displaying the confidence score, very similar to the filter used in Finance
 
+After being able to display succesful results where I've uploaded an image of an actual rubber duck came the other scenario when a rubber duck is not in the picture. After some consulting and reflecting, I decided to change the table schema. A new column duck_found was added which will be either 0 or 1 and NOT NULL will be removed from the confidence_score column. This allows for an if statement in the result.html that uses the duck_found variable
+
 
 Try it out here: 
