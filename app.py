@@ -32,7 +32,7 @@ cur = conn.cursor()
 
 results_table_query = """
             CREATE TABLE IF NOT EXISTS
-            duck_results (id INTEGER PRIMARY KEY, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, confidence_score FLOAT NOT NULL, s3_key TEXT NOT NULL, s3_url TEXT)
+            duck_results (id INTEGER PRIMARY KEY, confidence_score FLOAT NOT NULL, s3_key TEXT NOT NULL, s3_url TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
             """
 
 cur.execute(results_table_query)
@@ -120,7 +120,9 @@ def image():
         result_id = str(uuid.uuid4())
 
         # Store results in our database
-        cur.execute("INSERT INTO duck_results(?, ?, ?, ?)", result_id, datetime.now(), rubber_duck_conf, )
+        s3_url = f"https://{bucket_name}.s3.eu-central-1.amazonaws.com/{filename}"
+        cur.execute("INSERT INTO duck_results(?, ?, ?, ?, ?)", result_id, rubber_duck_conf, filename, s3_url)
+        conn.commit()
 
         # Redirect user to result page
         return redirect(url_for('result', result_id=result_id))
