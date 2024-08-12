@@ -11,13 +11,18 @@ app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 app.config['DEBUG'] = True
+
+# App config code by ChatGPT
 # Set maximum file size (e.g., 5 MB)
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
+# Set the upload folder path
+app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')
+# Ensure the folder exists
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 Session(app)
 
 # Code by ChatGPT
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
-
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -40,6 +45,11 @@ def image():
         file = request.files['image']
 
         # Ensure valid image was uploaded. All validation code by ChatGPT
+
+        # If the user does not select a file, the browser may submit an empty file without a filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
 
         # Validate file extension
         if not file or not allowed_file(file.filename):
