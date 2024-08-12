@@ -7,8 +7,8 @@
 {% block main %}
     <img class="border img-fluid max-width-400" src="{{ result['s3_url'] }}">
     {% if result['duck_found'] %}
-        <p>Duck found! With confidence {{ result['conf_score'] | conf }}</p>
+        <p>Rubber duck found! With confidence {{ result['conf_score'] | conf }}</p>
     {% else %}
-        <p>No duck found :(</p>
+        <p>No rubber duck found :(</p>
     {% endif %}
 {% endblock %}
