@@ -52,5 +52,7 @@ The SQLite db connection was set up without the CS50 training wheels and a duck_
 A things that tripped me up was using TEXT for the primary key ID since we're using a unique uuid string and not a simple
 auto-incremental integer. I also had to consult with ChatGPT on how to deal with thread safety when using database connections in Flask. The solution is create a separate db connection everytime we insert or update something. Also created a separate script to set up the initial table since the 'before_first_request' decorator is depreciated
 
+To display the uploaded image I had to enable public read as a Bucket Policy for my S3 bucket. Since this is not in production and just a rather silly project, this is okay. I applied a max width of 400 pixels to the displayed uploaded picture and I also added a custom jinja filter that is used when displaying the confidence score, very similar to the filter used in Finance
+
 
 Try it out here: 
