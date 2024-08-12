@@ -165,12 +165,9 @@ def image():
             
             draw_bounding_boxes(file_path, bounding_box, filename_bb)
             
-            # Upload the image with bounding boxes to S3
-            with open(file_path, 'rb') as data:
-                try:
-                    s3.upload_fileobj(data, bucket_name, filename_bb)
-                except Exception as e:
-                    return redirect(request.url)
+            # Upload the image with bounding boxes to S3 using upload_file since we're uploading a locally saved image
+            # and not a Flask in-memory file
+            s3.upload_file(filename_bb, bucket_name, filename_bb)
             
             # Clean up local files
             os.remove(file_path)

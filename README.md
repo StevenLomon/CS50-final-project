@@ -68,7 +68,9 @@ to:
         with open(file_path, "rb") as data:
             s3.upload_fileobj(data, bucket_name, filename)
 
-After having fixed this, brute forcing for about an hour, I encountered another smaller problem, more silly in nature: I'm just naïvely adding "-bb" to the entire filename, resulting in this error: "ValueError: unknown file extension: .jpg-bb". This was fixed rather simply by splitting the filename into base name and extension using os.path.splitext
+After having fixed this, brute forcing for about an hour, I encountered another smaller problem, more silly in nature: I'm just naïvely adding "-bb" to the entire filename, resulting in this error: "ValueError: unknown file extension: .jpg-bb". This was fixed rather simply by splitting the filename into base name and extension using 
+
+For quite a few moments there were problems seeing the bounding boxes. I could see them on the locally saved image but not the one uploaded to S3 that is being displayed on the front end with Flask. The fix for this was to use upload_file instead of upload_fileobj since we're uploading a locally saved image and not a Flask in-memory file
 
 
 Try it out here: 
