@@ -58,7 +58,7 @@ After being able to display succesful results where I've uploaded an image of an
 
 Next up is bounding boxes. At this stage I also observed that Rekognition is more confident detecting "Bird" rather than "Duck" when I upload something that clearly is a rubber duck. So I decided to pivot my approac and have Rubber duck confidence be made up of Toy confidence and Bird confidence. Still a rubber duck if you ask me haha! I also changed the name of the function, changed it to have it return a dict and started coding to extract the bounding box data. This is the data that will be used together with matplot lib to draw out the bounding boxes in the images that the use uploads for the final result. I added three columns to the database schema to store all bounding box data: a Boolean bounding_box_available that is NOT NULL, a Text boolean_box_data, and another Text s3_url_bounding_box
 
-To get started with drawing the bounding boxes in matplot lib...
+To get started with drawing the bounding boxes in matplot lib, ChatGPT provided me with a function that will draw it using matplotlib; both pyplot and another one I've never heard of called patches. A lot of changes were done in both app.py and rekognition.py in order to properly extract bounding box data and use it with the uploaded image. The bounding box data needed to be parsed to json format. In rekognition.py, I decided that I will always use the bounding box data for the 'Toy' label (will often be 98%+) if a rubber duck is detected. I also needed to save the uploaded image locally in order to use it with PIL and matplotlib and therefore another line of app.config was added to configure UPLOAD_FOLDER
 
 
 Try it out here: 

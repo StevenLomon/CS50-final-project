@@ -25,6 +25,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 app.config['DEBUG'] = True
 app.config['DATABASE'] = 'rubber_duck.db'
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024 # Set maximum file size (e.g., 5 MB)
+app.config['UPLOAD_FOLDER'] = 'uploads' # Will only be used for saving uploads locally if we're gonna draw bounding boxes on them
 
 Session(app)
 

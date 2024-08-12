@@ -9,7 +9,7 @@ from flask import redirect, render_template, request, session
 from functools import wraps
 
 # For drawing bounding boxes
-from PIL import Image
+from PIL import Image, ImageDraw
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches 
 
@@ -44,39 +44,19 @@ def conf(value):
     return f"{value:,.2f}%"
 
 # Function to help draw bounding boxes using matplotlib. From ChatGPT
-def draw_bounding_boxes(image_path, bounding_boxes, output_path):
-    # Load image
+def draw_bounding_boxes(image_path, bounding_boxes, output_file):
+    # Open the image file from the file path
     image = Image.open(image_path)
-    image = image.convert('RGB')
-
-    # Image dimensions
-    image_width, image_height = image.size
-
-    # Create a matplotlib figure and axis
-    fig, ax = plt.subplots(1)
-
-    # Display the image
-    ax.imshow(image)
-
+    draw = ImageDraw.Draw(image)
+    
     # Draw bounding boxes
-    for label, boxes in bounding_boxes.items():
-        for box in boxes:
-            # Calculate bounding box coordinates in pixels
-            left = box['Left'] * image_width
-            top = box['Top'] * image_height
-            width = box['Width'] * image_width
-            height = box['Height'] * image_height
-
-            # Create a rectangle patch
-            rect = patches.Rectangle(
-                (left, top), width, height,
-                linewidth=2, edgecolor='red', facecolor='none'
-            )
-
-            # Add the rectangle patch to the axis
-            ax.add_patch(rect)
-
-    # Save the plot as an image file
-    plt.axis('off')  # Hide the axis
-    plt.savefig(output_path, bbox_inches='tight', pad_inches=0)
-    plt.close()
+    for box in bounding_boxes:
+        left = box['Left'] * image.width
+        top = box['Top'] * image.height
+        width = box['Width'] * image.width
+        height = box['Height'] * image.height
+        
+        draw.rectangle([left, top, left + width, top + height], outline='red', width=3)
+    
+    # Save the image with bounding boxes
+    image.save(output_file)
