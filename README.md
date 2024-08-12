@@ -30,5 +30,10 @@ After succesfully setting up and implementing Rekognition and playing around to 
 I wrote some code to implement this logic of combining the labels of Duck and Toy, taking the average of their confidence
 to get Rubber Duck confidence haha!
 
+I then started to code and implement the Flask front end. I made sure that the button on the index front page linked
+correctly to the image route and that the image route can be reached by clicking the Upload Image button. The biggest
+lesson to take away from being stuck here for a little while is that the actions in the .html files should link to the
+routes, not html files
+
 
 Try it out here: 
