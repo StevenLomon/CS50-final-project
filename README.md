@@ -68,5 +68,7 @@ to:
         with open(file_path, "rb") as data:
             s3.upload_fileobj(data, bucket_name, filename)
 
+After having fixed this, brute forcing for about an hour, I encountered another smaller problem, more silly in nature: I'm just naïvely adding "-bb" to the entire filename, resulting in this error: "ValueError: unknown file extension: .jpg-bb". This was fixed rather simply by splitting the filename into base name and extension using os.path.splitext
+
 
 Try it out here: 

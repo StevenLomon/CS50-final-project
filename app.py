@@ -106,8 +106,12 @@ def image():
         # Ensure the file pointer is at the beginning of the file saving locally and before uploading to S3
         file.seek(0)
 
-        # Securely save the file locally
         filename = secure_filename(file.filename)
+
+        # Split the filename into the base name and the extension for bounding box filenames (if needed)
+        base_name, ext = os.path.splitext(filename)
+
+        # Securely save the file locally
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         
         try:
@@ -156,9 +160,9 @@ def image():
         # type and create an S3 url. Then draw the bounding boxes
         if bounding_box_available:
             bounding_box_data_json = json.dumps(bounding_box)
-            s3_url_bb = f"https://{bucket_name}.s3.eu-central-1.amazonaws.com/{filename}-bb"
-            filename_bb = f"{filename}-bb"
-
+            filename_bb = f"{base_name}-bb{ext}"
+            s3_url_bb = f"https://{bucket_name}.s3.eu-central-1.amazonaws.com/{filename_bb}"
+            
             draw_bounding_boxes(file_path, bounding_box, filename_bb)
             
             # Upload the image with bounding boxes to S3
