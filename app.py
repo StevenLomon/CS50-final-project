@@ -133,6 +133,8 @@ def image():
         print(f"Bounding box: {bounding_box}")
         if rubber_duck_conf is not None:
             duck_found = 1
+        if bounding_box is not None:
+            bounding_box_available = 1
         
         # Generate unique result ID
         result_id = str(uuid.uuid4())
@@ -142,7 +144,10 @@ def image():
         cur = db.cursor()
 
         s3_url = f"https://{bucket_name}.s3.eu-central-1.amazonaws.com/{filename}"
-        cur.execute("INSERT INTO duck_results (id, duck_found, confidence_score, bounding_box, s3_key, s3_url) VALUES (?, ?, ?, ?, ?)", (result_id, duck_found, rubber_duck_conf, filename, s3_url))
+        s3_url_bb = None
+        if bounding_box_available:
+            s3_url_bb = f"https://{bucket_name}.s3.eu-central-1.amazonaws.com/{filename}-bb"
+        cur.execute("INSERT INTO duck_results (id, duck_found, bounding_box_available, confidence_score, bounding_box_data, s3_key, s3_url, s3_url_bounding_box) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (result_id, duck_found, bounding_box_available, rubber_duck_conf, bounding_box, filename, s3_url, s3_url_bb))
         db.commit()
 
         # Redirect user to result page

@@ -27,14 +27,16 @@ def get_rekognition_data(filename):
     labels = response['Labels']
     print(f"Rekognition labels: {labels}")
 
-    # Extract confidence values and bounding boxes from labels using dictionary comprehension
+    # Extract confidence values using dictionary comprehension
     confidence_values = {label['Name']: label.get('Confidence') for label in labels}
-    bounding_box = {
-        label['Name']: [
-            instance['BoundingBox'] for instance in label.get('Instances', [])
-        ]
-        for label in labels if label.get('Instances')
-    }
+
+    # Look through the labels for any with 95%+ confidence and extract bounding box data
+    bounding_box = [
+        instance['BoundingBox']
+        for label in labels
+        if label.get('Confidence') > 95 and label.get('Instances')
+        for instance in label['Instances']
+    ]
 
     # Get the confidence values for 'Toy' and 'Bird' (I've observerd that it often has larger confidence score than "Duck"), 
     # defaulting to None if not present
