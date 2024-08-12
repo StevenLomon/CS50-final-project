@@ -79,27 +79,27 @@ def image():
 
         # Validate file extension
         if not file or not allowed_file(file.filename):
-            return apology("Invalid file type", 400)
+            return apology("Invalid file type. Please use jpg, jpeg or png", 400)
         
         # Validate MIME type
         mime_type = file.content_type
         if mime_type not in ['image/jpg','image/jpeg', 'image/png']:
-            return apology("Invalid file type", 400)
+            return apology("Invalid file type. Please use jpg, jpeg or png", 400)
         
         # Validate file content using imghdr
         if imghdr.what(file) not in ALLOWED_EXTENSIONS:
-            return apology("Invalid image content", 400)
+            return apology("Invalid image content. Please try another image", 400)
         
         # Validating file size server-side
         if len(file.read()) > app.config['MAX_CONTENT_LENGTH']:
-            return apology("File too large", 400)
+            return apology("File too large: Please upload a picture no more than 5MB", 400)
         
         # Image content validation using PIL
         try:
             img = Image.open(file.stream)
             img.verify()  # Validate the image
         except (IOError, SyntaxError) as e:
-            return apology("Invalid image file", 400)
+            return apology("Invalid image file. Please try another image", 400)
         
         # Ensure the file pointer is at the beginning of the file before upload
         file.seek(0)
