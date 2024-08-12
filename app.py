@@ -1,9 +1,14 @@
+import os
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
+
+# For image validation
 from werkzeug.utils import secure_filename
 from PIL import Image
-import os, imghdr
-import boto3
+import imghdr 
+
+import uuid # For unique identifiers keeping result pages unique
+import boto3 # For S3 integration
 from helpers import apology
 
 # Configure application
@@ -91,11 +96,16 @@ def image():
         except Exception as e:
             flash(f'An error occurred: {str(e)}')
             return redirect(request.url)
+        
+        # Process the image (interaction with Rekognition)
+
+        # Store results (in database?)
+
+        # Generate unique result ID
+        result_id = str(uuid.uuid4())
 
         # Redirect user to result page
-        # flash("Image validated and sent to S3 bucket!")
-        return redirect("/")
-        #return redirect(url_for('result', result_id=result.id))
+        return redirect(url_for('result', result_id=result_id))
     
     # User reached route via GET (as by clicking the Upload Image Button in Index)
     else:
@@ -103,7 +113,15 @@ def image():
     
 @app.route("/result/<result_id>")
 def result(result_id):
+    def fetch_result():
+        return True
+    
     # Fetch result using result_id
+    result_data = fetch_result(result_id)  # Implement this function
+
+    if not result_data:
+        return apology("Result not found", 404)
+
     return render_template("result.html", result=result)
 
 @app.route("/camera")
