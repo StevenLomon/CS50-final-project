@@ -30,11 +30,11 @@ def get_rekognition_data(filename):
     # Extract confidence values using dictionary comprehension
     confidence_values = {label['Name']: label.get('Confidence') for label in labels}
 
-    # Look through the labels for any with 95%+ confidence and extract bounding box data
+    # Look through the labels for the one with name 'Toy' and extract bounding box data if there is 90%+ confidence 
     bounding_box = [
         instance['BoundingBox']
         for label in labels
-        if label.get('Confidence') > 95 and label.get('Instances')
+        if label.get('Name') == 'Toy' and label.get('Confidence') > 90 and label.get('Instances')
         for instance in label['Instances']
     ]
 
