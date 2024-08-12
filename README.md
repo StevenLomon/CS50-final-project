@@ -49,6 +49,8 @@ Once an image is completely validated and uploaded to the S3 bucket we
 4. Redirect to the result page where the result will be fetch using the resultID
 
 The SQLite db connection was set up without the CS50 training wheels and a duck_results table was created
+A things that tripped me up was using TEXT for the primary key ID since we're using a unique uuid string and not a simple
+auto-incremental integer. I also had to consult with ChatGPT on how to deal with thread safety when using database connections in Flask. The solution is create a separate db connection everytime we insert or update something. Also created a separate script to set up the initial table since the 'before_first_request' decorator is depreciated
 
 
 Try it out here: 

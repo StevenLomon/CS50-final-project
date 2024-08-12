@@ -33,25 +33,6 @@ def get_db():
         g._database = sqlite3.connect(app.config['DATABASE'])
     return g._database
 
-@app.before_first_request
-def initialize_database():
-    db = get_db()
-    cur = db.cursor()
-
-    results_table_query = """
-        CREATE TABLE IF NOT EXISTS
-        duck_results (
-            id INTEGER PRIMARY KEY,
-            confidence_score FLOAT NOT NULL,
-            s3_key TEXT NOT NULL,
-            s3_url TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """
-
-    cur.execute(results_table_query)
-    db.commit()
-
 @app.teardown_appcontext
 def close_connection(exception):
     db = getattr(g, '_database', None)
@@ -141,9 +122,12 @@ def image():
         result_id = str(uuid.uuid4())
 
         # Store results in our database
+        db = get_db()
+        cur = db.cursor()
+
         s3_url = f"https://{bucket_name}.s3.eu-central-1.amazonaws.com/{filename}"
         cur.execute("INSERT INTO duck_results (id, confidence_score, s3_key, s3_url) VALUES (?, ?, ?, ?)", (result_id, rubber_duck_conf, filename, s3_url))
-        conn.commit()
+        db.commit()
 
         # Redirect user to result page
         return redirect(url_for('result', result_id=result_id))
@@ -154,8 +138,12 @@ def image():
     
 @app.route("/result/<result_id>")
 def result(result_id):    
-    # Fetch result using result_id
-    result_data = cur.execute("SELECT * FROM duck_results WHERE id = ?", result_id)
+    # Fetch result data from datbase using result_id
+    db = get_db()
+    cur = db.cursor()
+
+    cur.execute("SELECT * FROM duck_results WHERE id=?", (result_id,))
+    result_data = cur.fetchone
     print(result_data)
 
     if not result_data:

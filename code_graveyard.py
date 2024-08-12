@@ -31,3 +31,9 @@
 
 
 # print(labels)
+
+# print("Files to be inserted\n")
+# print(f":{result_id}, Type: {type(result_id)}")
+# print(f":{rubber_duck_conf}, Type: {type(rubber_duck_conf)}")
+# print(f":{filename}, Type: {type(filename)}")
+# print(f":{s3_url}, Type: {type(s3_url)}")
