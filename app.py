@@ -11,11 +11,14 @@ import imghdr
 import uuid # For unique identifiers keeping result pages unique
 import boto3 # For S3 integration
 import threading # For database thread safety
-from helpers import apology
+from helpers import apology, conf
 from rekognition import get_rubber_duck_confidence_score
 
 # Configure application
 app = Flask(__name__)
+
+# Custom confidence decimal filter
+app.jinja_env.filters["conf"] = conf
 
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"

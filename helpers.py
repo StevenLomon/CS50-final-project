@@ -32,3 +32,8 @@ def apology(message, code=400):
         return s
 
     return render_template("apology.html", top=code, bottom=escape(message)), code
+
+# Very similar to USD in the Finance problem
+def conf(value):
+    """Formats confidence score value to two decimals."""
+    return f"{value:,.2f}"
