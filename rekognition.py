@@ -25,7 +25,7 @@ def get_rubber_duck_confidence_score(filename):
     )
 
     labels = response['Labels']
-    # print(labels)
+    print(f"Rekognition labels: {labels}")
 
     # Extract confidence values from labels
     confidence_values = {label['Name']: label.get('Confidence') for label in labels}

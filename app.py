@@ -115,6 +115,7 @@ def image():
         
         # Get rubber duck confidence score via interaction with Rekognition
         rubber_duck_conf = get_rubber_duck_confidence_score(filename)
+        print(f"Rubber duck confidence score: {rubber_duck_conf}")
         if not rubber_duck_conf:
             return apology("Could not fetch rubber duck confidence. Please try again later", 400)
         
@@ -143,13 +144,18 @@ def result(result_id):
     cur = db.cursor()
 
     cur.execute("SELECT * FROM duck_results WHERE id=?", (result_id,))
-    result_data = cur.fetchone
-    print(result_data)
+    result_data = cur.fetchone()
+    # Since all data is NOT NULL, we can be confident that the tuple positions will always be the same
+    conf_score = result_data[1]
+    s3_url = result_data[3]
+
+    print(f"Confidence score: {conf_score}")
+    print(f"S3 URL: {s3_url}")
 
     if not result_data:
         return apology("Result not found", 404)
 
-    return render_template("result.html", result=result)
+    return render_template("result.html", conf_score=conf_score, s3_url=s3_url)
 
 @app.route("/camera")
 def camera():

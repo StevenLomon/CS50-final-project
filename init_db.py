@@ -10,7 +10,7 @@ def initialize_database():
             id TEXT PRIMARY KEY,
             confidence_score FLOAT NOT NULL,
             s3_key TEXT NOT NULL,
-            s3_url TEXT,
+            s3_url TEXT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """
