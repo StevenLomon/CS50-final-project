@@ -5,13 +5,13 @@ from flask_session import Session
 
 # For image validation
 from werkzeug.utils import secure_filename
-from PIL import Image
+from PIL import Image # Will also be used for bounding box operations
 import imghdr 
 
 import uuid # For unique identifiers keeping result pages unique
 import boto3 # For S3 integration
-# import threading # For database thread safety
-from helpers import apology, conf
+
+from helpers import apology, conf, draw_bounding_boxes
 from rekognition import get_rekognition_data
 
 # Configure application
@@ -118,7 +118,7 @@ def image():
         
         # Default values
         duck_found = bounding_box_available = 0
-        rubber_duck_conf = bounding_box = bounding_box_data_json = None
+        rubber_duck_conf = bounding_box = bounding_box_data_json = s3_url_bb = None
 
         # Get rubber duck confidence score via interaction with Rekognition
         rek_data = get_rekognition_data(filename)
@@ -135,6 +135,26 @@ def image():
             duck_found = 1
         if bounding_box is not None:
             bounding_box_available = 1
+        s3_url = f"https://{bucket_name}.s3.eu-central-1.amazonaws.com/{filename}"
+
+        # If bounding box data is available, convert  bounding_box to JSON string if it's not a primitive 
+        # type and create an S3 url. Then draw the bounding boxes
+        if bounding_box_available:
+            bounding_box_data_json = json.dumps(bounding_box)
+            s3_url_bb = f"https://{bucket_name}.s3.eu-central-1.amazonaws.com/{filename}-bb"
+            filename_bb = f"{filename}-bb"
+
+            draw_bounding_boxes(file, bounding_box, filename_bb)
+            
+
+            # Upload the image with bounding boxes to S3
+            try:
+                s3.upload_fileobj(file, bucket_name, filename_bb)
+            except Exception as e:
+                return redirect(request.url)
+            
+            # Clean up local file
+            os.remove(filename_bb)
         
         # Generate unique result ID
         result_id = str(uuid.uuid4())
@@ -143,13 +163,6 @@ def image():
         db = get_db()
         cur = db.cursor()
 
-        s3_url = f"https://{bucket_name}.s3.eu-central-1.amazonaws.com/{filename}"
-        s3_url_bb = None
-        if bounding_box_available:
-            # Convert bounding_box to JSON string if it's not a primitive type
-            bounding_box_data_json = json.dumps(bounding_box)
-            s3_url_bb = f"https://{bucket_name}.s3.eu-central-1.amazonaws.com/{filename}-bb"
-            
         cur.execute("INSERT INTO duck_results (id, duck_found, bounding_box_available, confidence_score, bounding_box_data, s3_key, s3_url, s3_url_bounding_box) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (result_id, duck_found, bounding_box_available, rubber_duck_conf, bounding_box_data_json, filename, s3_url, s3_url_bb))
         db.commit()
 
