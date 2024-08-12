@@ -3,6 +3,7 @@ from flask_session import Session
 from werkzeug.utils import secure_filename
 from PIL import Image
 import os, imghdr
+import boto3
 from helpers import apology
 
 # Configure application
@@ -15,13 +16,14 @@ app.config['DEBUG'] = True
 # App config code by ChatGPT
 # Set maximum file size (e.g., 5 MB)
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
-# Set the upload folder path
-app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')
-# Ensure the folder exists
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
 Session(app)
 
-# Code by ChatGPT
+# Create an S3 object for file programmatic image upload to the bucket
+s3 = boto3.client('s3')
+bucket_name = 'cs50-final-project-rubber-duck-bucket'
+
+# Code by ChatGPT for file validation
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 def allowed_file(filename):
     return '.' in filename and \
@@ -77,10 +79,18 @@ def image():
         
         # If we've reached this point of the code, save and process the file securely
         filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        # file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        try:
+            s3.upload_fileobj(file, bucket_name, filename)
+            flash('File uploaded successfully!')
+        except Exception as e:
+            flash(f'An error occurred: {str(e)}')
+            return redirect(request.url)
 
         # Redirect user to result page
-        return redirect(url_for('result', result_id=result.id))
+        flash("Image validated and sent to S3 bucket!")
+        return redirect("/")
+        #return redirect(url_for('result', result_id=result.id))
     
     # User reached route via GET (as by clicking the Upload Image Button in Index)
     else:
