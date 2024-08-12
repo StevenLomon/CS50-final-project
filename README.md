@@ -60,5 +60,13 @@ Next up is bounding boxes. At this stage I also observed that Rekognition is mor
 
 To get started with drawing the bounding boxes in matplot lib, ChatGPT provided me with a function that will draw it using matplotlib; both pyplot and another one I've never heard of called patches. A lot of changes were done in both app.py and rekognition.py in order to properly extract bounding box data and use it with the uploaded image. The bounding box data needed to be parsed to json format. In rekognition.py, I decided that I will always use the bounding box data for the 'Toy' label (will often be 98%+) if a rubber duck is detected. I also needed to save the uploaded image locally in order to use it with PIL and matplotlib and therefore another line of app.config was added to configure UPLOAD_FOLDER
 
+Saving the file locally for drawing bounding boxes caused quite the hick ups. But after brute forcing and a lot of consulting with ChatGPT, I saw the light again. We save locally, then upload to S3 and we fetch the image Rekognition uses from S3. The code to upload to S3 was adjusted slightly from just:
+    try: 
+        s3.upload_fileobj(file, bucket_name, filename)
+to:
+    try:
+        with open(file_path, "rb") as data:
+            s3.upload_fileobj(data, bucket_name, filename)
+
 
 Try it out here: 

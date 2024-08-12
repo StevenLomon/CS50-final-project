@@ -94,6 +94,7 @@ def image():
         # Validating file size server-side
         if len(file.read()) > app.config['MAX_CONTENT_LENGTH']:
             return apology("File too large: Please upload a picture no more than 5MB", 400)
+        file.seek(0)  # Reset file pointer to the beginning
         
         # Image content validation using PIL
         try:
@@ -102,19 +103,27 @@ def image():
         except (IOError, SyntaxError) as e:
             return apology("Invalid image file. Please try another image", 400)
         
-        # Ensure the file pointer is at the beginning of the file before upload
+        # Ensure the file pointer is at the beginning of the file saving locally and before uploading to S3
         file.seek(0)
 
-        # If we've reached this point of the code, save and process the file securely
+        # Securely save the file locally
         filename = secure_filename(file.filename)
-        # file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        
+        try:
+            file.save(file_path)
+            print(f"File saved locally at {file_path}")
+        except Exception as e:
+            flash(f'An error occurred while saving the file locally: {str(e)}')
+            return redirect(request.url)
 
         # Upload the image to our S3 bucket
         try:
-            s3.upload_fileobj(file, bucket_name, filename)
+            with open(file_path, "rb") as data:
+                s3.upload_fileobj(data, bucket_name, filename)
             flash('File uploaded successfully!')
         except Exception as e:
-            flash(f'An error occurred: {str(e)}')
+            flash(f'An error occurred while uploading the file to S3: {str(e)}')
             return redirect(request.url)
         
         # Default values
@@ -122,7 +131,11 @@ def image():
         rubber_duck_conf = bounding_box = bounding_box_data_json = s3_url_bb = None
 
         # Get rubber duck confidence score via interaction with Rekognition
-        rek_data = get_rekognition_data(filename)
+        try:
+            rek_data = get_rekognition_data(filename)
+        except Exception as e:
+            return apology(f"An error occurred while processing the image with Rekognition: {str(e)}", 400)
+        
         if not isinstance(rek_data, dict):
             return apology("Unexpected exception when getting data from Rekognition. Please try again", 400)
         
@@ -132,6 +145,7 @@ def image():
 
         print(f"Rubber duck confidence score: {rubber_duck_conf}")
         print(f"Bounding box: {bounding_box}")
+
         if rubber_duck_conf is not None:
             duck_found = 1
         if bounding_box is not None:
@@ -145,13 +159,8 @@ def image():
             s3_url_bb = f"https://{bucket_name}.s3.eu-central-1.amazonaws.com/{filename}-bb"
             filename_bb = f"{filename}-bb"
 
-            # Save the uploaded file locally
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(file_path)
-
             draw_bounding_boxes(file_path, bounding_box, filename_bb)
             
-
             # Upload the image with bounding boxes to S3
             with open(file_path, 'rb') as data:
                 try:
