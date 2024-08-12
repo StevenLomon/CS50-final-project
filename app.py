@@ -144,16 +144,22 @@ def image():
             s3_url_bb = f"https://{bucket_name}.s3.eu-central-1.amazonaws.com/{filename}-bb"
             filename_bb = f"{filename}-bb"
 
-            draw_bounding_boxes(file, bounding_box, filename_bb)
+            # Save the uploaded file locally
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
+
+            draw_bounding_boxes(file_path, bounding_box, filename_bb)
             
 
             # Upload the image with bounding boxes to S3
-            try:
-                s3.upload_fileobj(file, bucket_name, filename_bb)
-            except Exception as e:
-                return redirect(request.url)
+            with open(file_path, 'rb') as data:
+                try:
+                    s3.upload_fileobj(data, bucket_name, filename_bb)
+                except Exception as e:
+                    return redirect(request.url)
             
-            # Clean up local file
+            # Clean up local files
+            os.remove(file_path)
             os.remove(filename_bb)
         
         # Generate unique result ID
