@@ -63,7 +63,7 @@ def draw_bounding_boxes(image_path, bounding_boxes, output_file):
         print(f"Bounding Box {i}: left={left}, top={top}, width={width}, height={height}")
         
         # Draw rectangle on the image
-        draw.rectangle([left, top, left + width, top + height], outline='red', width=3)
+        draw.rectangle([left, top, left + width, top + height], outline='red', width=10)
     
     # Save the image with bounding boxes
     try:
