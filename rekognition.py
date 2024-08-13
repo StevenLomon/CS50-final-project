@@ -29,7 +29,7 @@ def get_rekognition_data(filename):
     )
 
     labels = response['Labels']
-    filtered_labels = [label for label in labels if label.get('Name') in rubber_duck_labels]
+    filtered_labels = [label for label in labels if label.get('Confidence') > 52 and label.get('Name') in rubber_duck_labels]
     print(f"Labels: {labels}")
     print(f"Filtered labels: {filtered_labels}")
 
@@ -40,7 +40,7 @@ def get_rekognition_data(filename):
     # Look through the labels for the one with name 'Toy' and extract bounding box data if there is 90%+ confidence 
     bounding_box = [
         instance['BoundingBox']
-        for label in labels # Using the extended BoundingBox label list
+        for label in labels
         if label.get('Confidence') > 50 and label.get('Instances') and label.get('Name') in boundinx_box_labels #"and label.get('Name') == 'Toy'" was previously used but now the code is much more general
         for instance in label['Instances']
     ]
