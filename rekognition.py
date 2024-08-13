@@ -8,8 +8,8 @@ bucket_name = 'cs50-final-project-rubber-duck-bucket'
 # # Test to upload an image PASSED
 # s3.upload_file('rubber-duck-2.jpg', 'cs50-final-project-rubber-duck-bucket', 'rubber-duck-2.jpg')
 
-# rubber_duck_labels = ['Toy', 'Bird', 'Duck'] Previous version that gave somewhat mixed results
-rubber_duck_labels = ['Toy', 'Bird']
+# rubber_duck_labels = ['Toy', 'Bird', 'Duck'] #Previous version that gave somewhat mixed results
+rubber_duck_labels = ['Toy', 'Bird', 'Inflatable']
 
 def get_rekognition_data(filename):
     # Create an AWS Rekognition object
@@ -23,12 +23,13 @@ def get_rekognition_data(filename):
                 'Name': filename
             },
         },
-        MaxLabels = 15,
-        MinConfidence = 60
+        MaxLabels = 50,
+        MinConfidence = 50
     )
 
     labels = response['Labels']
     filtered_labels = [label for label in labels if label.get('Name') in rubber_duck_labels]
+    print(f"Labels: {labels}")
     print(f"Filtered labels: {filtered_labels}")
 
     # Get the confidence values from relevant labels using list comprehension

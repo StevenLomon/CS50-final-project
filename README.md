@@ -83,6 +83,15 @@ I tried having these three as the main labels: rubber_duck_labels = ['Toy', 'Bir
 Confidence values: [99.88025665283203, 79.40372467041016, 61.668853759765625]
 That being 'Toy', 'Bird' and 'Duck' in that order. So I went back to only having rubber_duck_labels = ['Toy', 'Bird']
 
+Ultimarely I wanted to be able to detect rubber ducks in pictures like these: https://asiantigersgroup.com/news/industry-news/the-quack-tacular-arrival-hong-kong-welcomes-giant-rubber-duckies/
+And I was when I set maxLabels as 50 and minConfidence as 50! In pictures like these, Rekognition has to sift through a loooot of labels in order to get to the things we're looking for haha. But they're in there somewhere! In that picture we have these confidence values: Confidence values: [55.149723052978516, 55.149723052978516, 52.95594787597656]
+And the order is difference this time. These are the filtered labels: 
+Filtered labels: [{'Name': 'Bird', 'Confidence': 55.149723052978516, 'Instances': [], 'Parents': [{'Name': 'Animal'}], 'Aliases': [], 
+'Categories': [{'Name': 'Animals and Pets'}]}, {'Name': 'Duck', 'Confidence': 55.149723052978516, 'Instances': [], 'Parents': [{'Name':
+'Animal'}, {'Name': 'Bird'}], 'Aliases': [], 'Categories': [{'Name': 'Animals and Pets'}]}, {'Name': 'Toy', 'Confidence': 
+52.95594787597656, 'Instances': [], 'Parents': [], 'Aliases': [], 'Categories': [{'Name': 'Hobbies and Interests'}]}]
+In going through all of the labels that Rekognition picked up in this picture I also found another useful label: 'Inflatable'! This one was quickly added to the list of accepted labels. I noticed that 'Beak' could also be added but I 'Bird' is enough
+
 
 
 
