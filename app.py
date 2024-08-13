@@ -89,7 +89,7 @@ def image():
         
         # Validate file content using imghdr
         if imghdr.what(file) not in ALLOWED_EXTENSIONS:
-            return apology("Invalid image content. Please try another image", 400)
+            return apology("Invalid image content. Are you sure you didn't just change the extension of the file? Please try another image", 400)
         
         # Validating file size server-side
         if len(file.read()) > app.config['MAX_CONTENT_LENGTH']:
