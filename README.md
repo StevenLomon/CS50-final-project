@@ -6,6 +6,8 @@ Video demo:
 Description:
 Allows the user to either upload an image or turn on their web camera and have the application detect if there is a rubber duck present in the picture/camera! :)
 
+This is a project that is rather silly in nature and simply a fun showcase of this detection technology. But it can easily be adjusted for someone more useful in the real world such as identifying products in a store for inventory management, smart surveillance systems, identifying suspicious objects in the streets or ...
+
 My complete starting vision now writing on the 5th of Aug 2024: 
 There will be a front-end web application with the title "Is there a Rubber Duck in this Image?" and the option to choose Upload Image or Turn on Camera.
 If the user uploads an image, the image will display on the screen and one of two things will happen. 1: There is no rubber duck in the image and so there are no bounding boxes applied. There is a text below the image that will say "No rubber duck detected :(". 2: There is a rubber duck in the image and so a bounding box will surround it with a percentage of how sure the model is that it is indeed a rubber duck. Below the image, the text "Rubber duck detected! :))" will be displayed.
@@ -73,6 +75,11 @@ After having fixed this, brute forcing for about an hour, I encountered another 
 For quite a few moments there were problems seeing the bounding boxes. I could see them on the locally saved image but not the one uploaded to S3 that is being displayed on the front end with Flask. The fix for this was to use upload_file instead of upload_fileobj since we're uploading a locally saved image and not a Flask in-memory file
 
 Now that uploading images fully work, I wanted to spend some time fune tuning our model. Maybe see where it doesn't work despite it being a rubber duck, see what labels Rekognition detects and fine tune my algorithm for detecting rubber ducks.
+
+This was an interesting image to upload: https://www.rebeccas.com/rubber-ducks-3-12-inch-12-count.html
+The 'Toy' label is nowhere to be found, the 'Bird' label is only found with 66.6% confidence and the coin is seemingly interfering a lot. I can't simply look for 'Bird' and call it a rubber duck, I need 'Toy' or something similar.
+
+
 
 
 Try it out here: 

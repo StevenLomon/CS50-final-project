@@ -1,5 +1,5 @@
 import boto3
-# from rich import print
+from rich import print
 
 # Create an S3 object
 s3 = boto3.client('s3')
