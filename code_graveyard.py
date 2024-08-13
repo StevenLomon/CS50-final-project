@@ -41,3 +41,22 @@
 # # Get the confidence values from relevant labels
 # confidence_values = [label.get('Confidence') for label in filtered_labels]
 # print(f"Confidence values: {confidence_values}")
+
+# # Find the maximum confidence for 'Toy' and 'Inflatable' and get the name of that label. Do the same thing with and same with 'Duck' and 'Bird'. This is written by ChatGPT
+# toy_inflatable_confidences = [(label['Name'], label['Confidence']) for label in filtered_labels if label['Name'] in ['Toy', 'Inflatable']]
+# max_confidence_label = max(toy_inflatable_confidences, key=lambda x: x[1], default=(None, None))[0]
+
+# # Construct the confidence_values list based on the highest confidence label
+# confidence_values = [
+#     label['Confidence'] for label in filtered_labels
+#     if label['Name'] not in ['Toy', 'Inflatable']
+# ]
+
+# # Add the confidence of either 'Toy' or 'Inflatable' based on which has the highest confidence. We only use one
+# if max_confidence_label:
+#     max_confidence_value = next(
+#         (label['Confidence'] for label in filtered_labels if label['Name'] == max_confidence_label),
+#         None
+#     )
+#     if max_confidence_value is not None:
+#         confidence_values.append(max_confidence_value)

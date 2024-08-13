@@ -147,9 +147,6 @@ def image():
             rubber_duck_conf = rek_data.get('rubber_duck_conf')
             bounding_box = rek_data.get('bounding_box')
 
-        print(f"Rubber duck confidence score: {rubber_duck_conf}")
-        print(f"Bounding box: {bounding_box}")
-
         if rubber_duck_conf is not None:
             duck_found = 1
         if bounding_box is not None:

@@ -9,7 +9,7 @@ bucket_name = 'cs50-final-project-rubber-duck-bucket'
 # s3.upload_file('rubber-duck-2.jpg', 'cs50-final-project-rubber-duck-bucket', 'rubber-duck-2.jpg')
 
 # rubber_duck_labels = ['Toy', 'Bird', 'Duck'] #Previous version that gave somewhat mixed results
-rubber_duck_labels = ['Toy', 'Bird', 'Inflatable']
+rubber_duck_labels = ['Toy', 'Bird', 'Duck', 'Inflatable']
 boundinx_box_labels = rubber_duck_labels + ['Helmet']
 
 def get_rekognition_data(filename):
@@ -29,28 +29,69 @@ def get_rekognition_data(filename):
     )
 
     labels = response['Labels']
-    filtered_labels = [label for label in labels if label.get('Confidence') > 52 and label.get('Name') in rubber_duck_labels]
+    filtered_labels = [label for label in labels if label.get('Confidence') > 50 and label.get('Name') in rubber_duck_labels]
     print(f"Labels: {labels}")
     print(f"Filtered labels: {filtered_labels}")
 
-    # Find the maximum confidence for 'Toy' and 'Inflatable' and get the name of that label. This is written by ChatGPT
-    toy_inflatable_confidences = [(label['Name'], label['Confidence']) for label in filtered_labels if label['Name'] in ['Toy', 'Inflatable']]
-    max_confidence_label = max(toy_inflatable_confidences, key=lambda x: x[1], default=(None, None))[0]
-
-    # Construct the confidence_values list based on the highest confidence label
-    confidence_values = [
-        label['Confidence'] for label in filtered_labels
-        if label['Name'] not in ['Toy', 'Inflatable']
+    # Extract toy_inflatable_confidences
+    toy_inflatable_confidences = [
+        (label['Name'], label['Confidence']) 
+        for label in filtered_labels 
+        if label['Name'] in ['Toy', 'Inflatable']
     ]
 
-    # Add the confidence of either 'Toy' or 'Inflatable' based on which has the highest confidence. We only use one
-    if max_confidence_label:
-        max_confidence_value = next(
-            (label['Confidence'] for label in filtered_labels if label['Name'] == max_confidence_label),
+    # Extract duck_bird_confidences
+    duck_bird_confidences = [
+        (label['Name'], label['Confidence']) 
+        for label in filtered_labels 
+        if label['Name'] in ['Duck', 'Bird']
+    ]
+
+    # Find the label with maximum confidence for 'Toy' and 'Inflatable'
+    max_toy_inflatable_label = max(
+        toy_inflatable_confidences, 
+        key=lambda x: x[1], 
+        default=(None, 0)
+    )[0]
+
+    # Find the label with maximum confidence for 'Duck' and 'Bird'
+    max_duck_bird_label = max(
+        duck_bird_confidences, 
+        key=lambda x: x[1], 
+        default=(None, 0)
+    )[0]
+
+    # Construct the confidence_values list
+    confidence_values = [
+        label['Confidence'] 
+        for label in filtered_labels 
+        if label['Name'] not in ['Toy', 'Inflatable', 'Duck', 'Bird']
+    ]
+
+    # Add the highest confidence values for 'Toy/Inflatable' and 'Duck/Bird'
+    if max_toy_inflatable_label:
+        max_toy_inflatable_value = next(
+            (label['Confidence'] for label in filtered_labels if label['Name'] == max_toy_inflatable_label),
             None
         )
-        if max_confidence_value is not None:
-            confidence_values.append(max_confidence_value)
+        if max_toy_inflatable_value is not None:
+            confidence_values.append(max_toy_inflatable_value)
+
+    if max_duck_bird_label:
+        max_duck_bird_value = next(
+            (label['Confidence'] for label in filtered_labels if label['Name'] == max_duck_bird_label),
+            None
+        )
+        if max_duck_bird_value is not None:
+            confidence_values.append(max_duck_bird_value)
+
+    # Check if 'Rubber Duck' should be considered based on the combination criteria
+    rubber_duck_label = None
+    if max_toy_inflatable_label and max_duck_bird_label:
+        rubber_duck_label = f"{max_duck_bird_label} + {max_toy_inflatable_label}"
+
+    print(f"Confidence values: {confidence_values}")
+    print(f"Rubber Duck Label: {rubber_duck_label}")
 
     # Look through the labels and extract BoundingBox data if there is any
     bounding_box = [
@@ -64,6 +105,7 @@ def get_rekognition_data(filename):
     # Calculate rubber duck confidence if the list contains at least 2 values
     if confidence_values and len(confidence_values) > 1:
         rubber_duck_conf = sum(confidence_values) / len(confidence_values)
+        print(f"Rubber Duck Confidence Level: {rubber_duck_conf}")
 
         # Return rubber duck confidence score and bounding box data as a dictionary
         return {'rubber_duck_conf': rubber_duck_conf, 'bounding_box': bounding_box}

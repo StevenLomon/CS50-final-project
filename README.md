@@ -8,6 +8,8 @@ Allows the user to either upload an image or turn on their web camera and have t
 
 This is a project that is rather silly in nature and simply a fun showcase of this detection technology. But it can easily be adjusted for someone more useful in the real world such as identifying products in a store for inventory management, smart surveillance systems, identifying suspicious objects in the streets or ...
 
+I believe I've really got to practice taking imperfect action and fine tuning as I go which is super important when it comes to coding and large projects. Not getting crippled by analysis paralysis and instead being solution oriented. Failing forward!
+
 My complete starting vision now writing on the 5th of Aug 2024: 
 There will be a front-end web application with the title "Is there a Rubber Duck in this Image?" and the option to choose Upload Image or Turn on Camera.
 If the user uploads an image, the image will display on the screen and one of two things will happen. 1: There is no rubber duck in the image and so there are no bounding boxes applied. There is a text below the image that will say "No rubber duck detected :(". 2: There is a rubber duck in the image and so a bounding box will surround it with a percentage of how sure the model is that it is indeed a rubber duck. Below the image, the text "Rubber duck detected! :))" will be displayed.
@@ -107,8 +109,8 @@ These are its filtered labels: Filtered labels: [{'Name': 'Inflatable', 'Confide
 It picks up 'Inflatable' with a confidence of 95.84! But 'Toy' with a confidence of only 52.23. I could keep changing the label threshold to 53 or I could just change the code so that only one is used. And so I did. We only use either 'Toy' or 'Inflatable', whichever is the largest. So rubber duck is essentially 'Bird' + 'Toy' OR 'Bird' + 'Inflatable'
 
 In order to not be stuck in fine tuning hell forever, I decided that this would be the final test: https://interaksyon.philstar.com/trends-spotlights/2023/06/11/253380/one-of-two-giant-rubber-ducks-in-hong-kong-harbor-deflates/
-
-
+And this one revealed a very important implementation detail! 'Duck' is in the labels but not 'Bird'. It only has a confidence score of 50.6 but it's in there! So a few changes needed to be done before I called it a project. 
+'Rubber Duck' as a label is now either a combination of 'Bird' + 'Toy', 'Bird' + 'Inflatable', 'Duck' + 'Toy' or 'Duck' + 'Inflatable'. That's it. That's final :)
 
 
 Try it out here: 
