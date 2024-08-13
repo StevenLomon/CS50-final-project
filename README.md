@@ -79,6 +79,10 @@ Now that uploading images fully work, I wanted to spend some time fune tuning ou
 This was an interesting image to upload: https://www.rebeccas.com/rubber-ducks-3-12-inch-12-count.html
 The 'Toy' label is nowhere to be found, the 'Bird' label is only found with 66.6% confidence and the coin is seemingly interfering a lot. I can't simply look for 'Bird' and call it a rubber duck, I need 'Toy' or something similar.
 
+I tried having these three as the main labels: rubber_duck_labels = ['Toy', 'Bird', 'Duck'], and updated the logic in the code accordinly. But this resulted in scenarios with confidence values like this: 
+Confidence values: [99.88025665283203, 79.40372467041016, 61.668853759765625]
+That being 'Toy', 'Bird' and 'Duck' in that order. So I went back to only having rubber_duck_labels = ['Toy', 'Bird']
+
 
 
 
