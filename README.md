@@ -72,5 +72,7 @@ After having fixed this, brute forcing for about an hour, I encountered another 
 
 For quite a few moments there were problems seeing the bounding boxes. I could see them on the locally saved image but not the one uploaded to S3 that is being displayed on the front end with Flask. The fix for this was to use upload_file instead of upload_fileobj since we're uploading a locally saved image and not a Flask in-memory file
 
+Now that uploading images fully work, I wanted to spend some time fune tuning our model. Maybe see where it doesn't work despite it being a rubber duck, see what labels Rekognition detects and fine tune my algorithm for detecting rubber ducks.
+
 
 Try it out here: 
