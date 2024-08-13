@@ -8,6 +8,8 @@ bucket_name = 'cs50-final-project-rubber-duck-bucket'
 # # Test to upload an image PASSED
 # s3.upload_file('rubber-duck-2.jpg', 'cs50-final-project-rubber-duck-bucket', 'rubber-duck-2.jpg')
 
+rubber_duck_labels = ['Toy', 'Bird', 'Duck']
+
 def get_rekognition_data(filename):
     # Create an AWS Rekognition object
     rekognition = boto3.client('rekognition', region_name='eu-central-1')
@@ -20,32 +22,30 @@ def get_rekognition_data(filename):
                 'Name': filename
             },
         },
-        MaxLabels = 6,
-        MinConfidence = 60
+        MaxLabels = 15,
+        MinConfidence = 50
     )
 
     labels = response['Labels']
-    print(f"Rekognition labels: {labels}")
+    filtered_labels = [label for label in labels if label.get('Name') in rubber_duck_labels]
+    print(f"Filtered labels: {filtered_labels}")
 
-    # Extract confidence values using dictionary comprehension
-    confidence_values = {label['Name']: label.get('Confidence') for label in labels}
+    # Get the confidence values from relevant labels using list comprehension
+    confidence_values = [label.get('Confidence') for label in filtered_labels]
+    print(f"Confidence values: {confidence_values}")
 
     # Look through the labels for the one with name 'Toy' and extract bounding box data if there is 90%+ confidence 
     bounding_box = [
         instance['BoundingBox']
-        for label in labels
-        if label.get('Name') == 'Toy' and label.get('Confidence') > 90 and label.get('Instances')
+        for label in filtered_labels
+        if label.get('Name') == 'Toy' and label.get('Confidence') > 80 and label.get('Instances')
         for instance in label['Instances']
     ]
-
-    # Get the confidence values for 'Toy' and 'Bird' (I've observerd that it often has larger confidence score than "Duck"), 
-    # defaulting to None if not present
-    toy_conf = confidence_values.get('Toy')
-    bird_conf = confidence_values.get('Bird')
+    print(f"Bounding Box: {bounding_box}")
 
     # Calculate rubber duck confidence if both 'Duck' and 'Toy' are found
-    if toy_conf is not None and bird_conf is not None:
-        rubber_duck_conf = (toy_conf + bird_conf) / 2
+    if confidence_values:
+        rubber_duck_conf = sum(confidence_values) / len(confidence_values)
 
         # Return rubber duck confidence score and bounding box data as a dictionary
         return {'rubber_duck_conf': rubber_duck_conf, 'bounding_box': bounding_box}
