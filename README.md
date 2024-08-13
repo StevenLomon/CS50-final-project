@@ -93,6 +93,7 @@ Filtered labels: [{'Name': 'Bird', 'Confidence': 55.149723052978516, 'Instances'
 In going through all of the labels that Rekognition picked up in this picture I also found another useful label: 'Inflatable'! This one was quickly added to the list of accepted labels. I noticed that 'Beak' could also be added but I 'Bird' is enough. I want a bounding box around the big inflatable duck however :(
 I noticed something really interesting in this picture: https://www.fruugo.se/xianrenge-bath-duck-toys-16-pcs-rubber-ducks-squeak-and-float-duckies-baby-shower-toy-party-decoration-for-toddlers-boys-girls/p-69542347-139677373?language=en
 A bounding box was available for the label 'Helmet' but it only had a confidence on that label of 57.63%. Hence, I decided to lower my BoundingBox threshold from 80 to 50 and implement a new list of BoundingBox labels as an extension of all rubber duck labels where 'Helmet' was one of the new labels
+I also noticed with further experimentation that it is possible that it detects only one label ('Toy') and deems it a rubber duck when that is not the case at all hahaha. There needs to be at least 2 labels in filtered_labels
 
 
 
