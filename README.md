@@ -112,5 +112,9 @@ In order to not be stuck in fine tuning hell forever, I decided that this would 
 And this one revealed a very important implementation detail! 'Duck' is in the labels but not 'Bird'. It only has a confidence score of 50.6 but it's in there! So a few changes needed to be done before I called it a project. 
 'Rubber Duck' as a label is now either a combination of 'Bird' + 'Toy', 'Bird' + 'Inflatable', 'Duck' + 'Toy' or 'Duck' + 'Inflatable'. That's it. That's final :)
 
+The Camera feature might be implemented in the future. The vision there is to enable to laptop camera and detect a rubber duck with added bounding boxes as soon as one enters the frame
+
+http://istherearubberduckinthisimage.com/ is available! I'm buying that!! :D
+
 
 Try it out here: 

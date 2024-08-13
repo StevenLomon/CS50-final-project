@@ -44,8 +44,8 @@ tbody tr:nth-of-type(odd) {
     display: inline-block;
     padding: 10px 20px;
     font-size: 16px;
-    color: #fff;
-    background-color: #007bff;
+    color: #000;
+    background-color: #FFEA00;
     border: none;
     border-radius: 5px;
     text-align: center;
@@ -54,7 +54,7 @@ tbody tr:nth-of-type(odd) {
 }
 
 .btn:hover {
-    background-color: #0056b3;
+    background-color: #FDDA0D;
 }
 
 /* Makes the input take up the full width. Also written by ChatGPT */
@@ -68,4 +68,8 @@ tbody tr:nth-of-type(odd) {
     max-width: 400px;
     width: 100%; /* Ensures responsiveness */
     height: auto; /* Maintains aspect ratio */
+}
+
+h6 {
+    text-align: center;
 }
