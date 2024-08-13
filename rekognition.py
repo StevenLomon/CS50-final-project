@@ -10,6 +10,7 @@ bucket_name = 'cs50-final-project-rubber-duck-bucket'
 
 # rubber_duck_labels = ['Toy', 'Bird', 'Duck'] #Previous version that gave somewhat mixed results
 rubber_duck_labels = ['Toy', 'Bird', 'Inflatable']
+boundinx_box_labels = rubber_duck_labels + ['Helmet']
 
 def get_rekognition_data(filename):
     # Create an AWS Rekognition object
@@ -39,8 +40,8 @@ def get_rekognition_data(filename):
     # Look through the labels for the one with name 'Toy' and extract bounding box data if there is 90%+ confidence 
     bounding_box = [
         instance['BoundingBox']
-        for label in filtered_labels
-        if label.get('Name') == 'Toy' and label.get('Confidence') > 80 and label.get('Instances')
+        for label in labels # Using the extended BoundingBox label list
+        if label.get('Confidence') > 50 and label.get('Instances') and label.get('Name') in boundinx_box_labels #"and label.get('Name') == 'Toy'" was previously used but now the code is much more general
         for instance in label['Instances']
     ]
     print(f"Bounding Box: {bounding_box}")
