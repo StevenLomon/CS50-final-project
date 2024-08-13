@@ -47,7 +47,7 @@ def get_rekognition_data(filename):
     print(f"Bounding Box: {bounding_box}")
 
     # Calculate rubber duck confidence if both 'Duck' and 'Toy' are found
-    if confidence_values and len(confidence_values > 1):
+    if confidence_values and len(confidence_values) > 1:
         rubber_duck_conf = sum(confidence_values) / len(confidence_values)
 
         # Return rubber duck confidence score and bounding box data as a dictionary
