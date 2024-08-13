@@ -96,6 +96,18 @@ A bounding box was available for the label 'Helmet' but it only had a confidence
 I also noticed with further experimentation that it is possible that it detects only one label ('Toy') and deems it a rubber duck when that is not the case at all hahaha. There needs to be at least 2 labels in filtered_labels
 I adjusted MinCondifence to 52 but shortly thereafter I decided to keep it at 50 in case it can give us BoundingBox data and instead I added a conditional that any label in filtered_labels need to have a confidence score of at least 52
 
+This picture was very useful and the first one where I got a bounding box for a large inflatable duck! https://www.reuters.com/lifestyle/one-two-giant-rubber-ducks-hong-kong-harbour-deflates-2023-06-10/
+These are its filtered labels: Filtered labels: [{'Name': 'Inflatable', 'Confidence': 95.83766174316406, 'Instances': [], 'Parents': [], 'Aliases': [], 'Categories': 
+[{'Name': 'Toys and Gaming'}]}, {'Name': 'Bird', 'Confidence': 81.74077606201172, 'Instances': [{'BoundingBox': {'Width': 
+0.00635563675314188, 'Height': 0.011960327625274658, 'Left': 0.1470615416765213, 'Top': 0.734575092792511}, 'Confidence': 
+81.74077606201172}, {'BoundingBox': {'Width': 0.3781373202800751, 'Height': 0.5818305015563965, 'Left': 0.3939252197742462, 'Top': 
+0.2852320373058319}, 'Confidence': 77.08781433105469}], 'Parents': [{'Name': 'Animal'}], 'Aliases': [], 'Categories': [{'Name': 
+'Animals and Pets'}]}, {'Name': 'Toy', 'Confidence': 52.23092269897461, 'Instances': [], 'Parents': [], 'Aliases': [], 'Categories': 
+[{'Name': 'Hobbies and Interests'}]}]
+It picks up 'Inflatable' with a confidence of 95.84! But 'Toy' with a confidence of only 52.23. I could keep changing the label threshold to 53 or I could just change the code so that only one is used. And so I did. We only use either 'Toy' or 'Inflatable', whichever is the largest. So rubber duck is essentially 'Bird' + 'Toy' OR 'Bird' + 'Inflatable'
+
+In order to not be stuck in fine tuning hell forever, I decided that this would be the final test: https://interaksyon.philstar.com/trends-spotlights/2023/06/11/253380/one-of-two-giant-rubber-ducks-in-hong-kong-harbor-deflates/
+
 
 
 

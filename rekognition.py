@@ -33,11 +33,26 @@ def get_rekognition_data(filename):
     print(f"Labels: {labels}")
     print(f"Filtered labels: {filtered_labels}")
 
-    # Get the confidence values from relevant labels using list comprehension
-    confidence_values = [label.get('Confidence') for label in filtered_labels]
-    print(f"Confidence values: {confidence_values}")
+    # Find the maximum confidence for 'Toy' and 'Inflatable' and get the name of that label. This is written by ChatGPT
+    toy_inflatable_confidences = [(label['Name'], label['Confidence']) for label in filtered_labels if label['Name'] in ['Toy', 'Inflatable']]
+    max_confidence_label = max(toy_inflatable_confidences, key=lambda x: x[1], default=(None, None))[0]
 
-    # Look through the labels for the one with name 'Toy' and extract bounding box data if there is 90%+ confidence 
+    # Construct the confidence_values list based on the highest confidence label
+    confidence_values = [
+        label['Confidence'] for label in filtered_labels
+        if label['Name'] not in ['Toy', 'Inflatable']
+    ]
+
+    # Add the confidence of either 'Toy' or 'Inflatable' based on which has the highest confidence. We only use one
+    if max_confidence_label:
+        max_confidence_value = next(
+            (label['Confidence'] for label in filtered_labels if label['Name'] == max_confidence_label),
+            None
+        )
+        if max_confidence_value is not None:
+            confidence_values.append(max_confidence_value)
+
+    # Look through the labels and extract BoundingBox data if there is any
     bounding_box = [
         instance['BoundingBox']
         for label in labels
@@ -46,7 +61,7 @@ def get_rekognition_data(filename):
     ]
     print(f"Bounding Box: {bounding_box}")
 
-    # Calculate rubber duck confidence if both 'Duck' and 'Toy' are found
+    # Calculate rubber duck confidence if the list contains at least 2 values
     if confidence_values and len(confidence_values) > 1:
         rubber_duck_conf = sum(confidence_values) / len(confidence_values)
 

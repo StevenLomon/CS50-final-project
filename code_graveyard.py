@@ -37,3 +37,7 @@
 # print(f":{rubber_duck_conf}, Type: {type(rubber_duck_conf)}")
 # print(f":{filename}, Type: {type(filename)}")
 # print(f":{s3_url}, Type: {type(s3_url)}")
+
+# # Get the confidence values from relevant labels
+# confidence_values = [label.get('Confidence') for label in filtered_labels]
+# print(f"Confidence values: {confidence_values}")
