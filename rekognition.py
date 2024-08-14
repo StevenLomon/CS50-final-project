@@ -24,12 +24,12 @@ def get_rekognition_data(filename):
                 'Name': filename
             },
         },
-        MaxLabels = 50,
-        MinConfidence = 50
+        MaxLabels = 970,
+        MinConfidence = 35
     )
 
     labels = response['Labels']
-    filtered_labels = [label for label in labels if label.get('Confidence') > 50 and label.get('Name') in rubber_duck_labels]
+    filtered_labels = [label for label in labels if label.get('Confidence') > 10 and label.get('Name') in rubber_duck_labels]
     print(f"Labels: {labels}")
     print(f"Filtered labels: {filtered_labels}")
 

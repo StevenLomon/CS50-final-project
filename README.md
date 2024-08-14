@@ -114,6 +114,14 @@ And this one revealed a very important implementation detail! 'Duck' is in the l
 
 The Camera feature might be implemented in the future. The vision there is to enable to laptop camera and detect a rubber duck with added bounding boxes as soon as one enters the frame
 
+After a few post-satisfied experimentation where I inserted a Rubber Duck in photos with vibrant environments, people and lots of other things in the image, the model couldn't recognize a single rubber duck, even with the MaxLabel parameter at its absolute maximum of 1000. I only started being able to detect rubber duck in these Photoshopped images once I lowered the MinConfidence. One of such gave these results: Confidence values: [49.04203796386719, 44.312538146972656]
+Rubber Duck Label: Bird + Toy
+These results were from a custom image I deemed Medium difficulty: Confidence values: [38.668697357177734, 42.10551834106445]
+Rubber Duck Label: Bird + Inflatable. With that I decided that a good parameter value for MinConfidence is 35. It managed to find the rubber duck with 1000 but not with 500 so this parameter would have to lie somewhere in between. Neither with 965 haha. Further experimentation led to the value of 970. It didn't work with 969.
+So to recap, after a lot of manual experimentation (this is what you would usually use GridSearchCV or something for haha) I decided to go for 970 for my MaxLabel parameter and 35 for my MinConfidence parameter
+
+And with THAT, the project was a wrap :)
+
 http://istherearubberduckinthisimage.com/ is available! I'm buying that!! :D
 
 
