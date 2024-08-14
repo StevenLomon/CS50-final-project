@@ -24,7 +24,7 @@ def get_rekognition_data(filename):
                 'Name': filename
             },
         },
-        MaxLabels = 970,
+        MaxLabels = 320,
         MinConfidence = 35
     )
 

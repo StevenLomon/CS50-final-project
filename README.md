@@ -118,7 +118,9 @@ After a few post-satisfied experimentation where I inserted a Rubber Duck in pho
 Rubber Duck Label: Bird + Toy
 These results were from a custom image I deemed Medium difficulty: Confidence values: [38.668697357177734, 42.10551834106445]
 Rubber Duck Label: Bird + Inflatable. With that I decided that a good parameter value for MinConfidence is 35. It managed to find the rubber duck with 1000 but not with 500 so this parameter would have to lie somewhere in between. Neither with 965 haha. Further experimentation led to the value of 970. It didn't work with 969.
-So to recap, after a lot of manual experimentation (this is what you would usually use GridSearchCV or something for haha) I decided to go for 970 for my MaxLabel parameter and 35 for my MinConfidence parameter
+But this brought up the importance of speed and user experience. Is it really worth being able to do these really obscure edge cases if the overall user experience is worsened? I don't think so. Having a MaxLabels value of 970 is absolutely not worth it when we can still find the majority of rubber ducks with a value of 100. 320 was the label I landed on. With this value, it passes 4/5 of my Easy difficultly custom images haha. I then decided to provide these custom images in the form of a "Random Sample Image" button.
+
+So to recap, after a lot of manual experimentation (this is what you would usually use GridSearchCV or something for haha) and reflection on user experience, I decided to go for 320 for my MaxLabel parameter and 35 for my MinConfidence parameter
 
 And with THAT, the project was a wrap :)
 
