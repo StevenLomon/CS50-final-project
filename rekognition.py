@@ -12,12 +12,9 @@ bucket_name = 'cs50-final-project-rubber-duck-bucket'
 rubber_duck_labels = ['Toy', 'Bird', 'Duck', 'Inflatable']
 boundinx_box_labels = rubber_duck_labels + ['Helmet']
 
-def get_rekognition_data(filename):
-    # Create an AWS Rekognition object
-    rekognition = boto3.client('rekognition', region_name='eu-central-1')
-
+def get_rekognition_data(filename, rek_object, bucket_name):
     # Response object to fetch labels from image
-    response = rekognition.detect_labels(
+    response = rek_object.detect_labels(
         Image = {
             'S3Object': {
                 'Bucket': bucket_name,

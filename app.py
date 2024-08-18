@@ -44,9 +44,12 @@ def close_connection(exception):
         db.close()
 
 
-# Create an S3 object for file programmatic image upload to the bucket
+# Create an S3 object for file programmatic image upload to the bucket and for Rekognition
 s3 = boto3.client('s3')
 bucket_name = 'cs50-final-project-rubber-duck-bucket'
+
+# Create an AWS Rekognition object
+rekognition = boto3.client('rekognition', region_name='eu-central-1')
 
 # Code by ChatGPT for file validation
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -136,7 +139,7 @@ def image():
 
         # Get rubber duck confidence score via interaction with Rekognition
         try:
-            rek_data = get_rekognition_data(filename)
+            rek_data = get_rekognition_data(filename, rekognition, bucket_name)
         except Exception as e:
             return apology(f"An error occurred while processing the image with Rekognition: {str(e)}", 400)
         
