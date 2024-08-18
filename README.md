@@ -1,7 +1,7 @@
 Is there a Rubber Duck in this Image?
 
 My final project for Harvard's CS50 course!
-Video demo: 
+Video demo: https://www.youtube.com/watch?v=7oBrnQxvCRE&t=6s
 
 Description:
 Allows the user to either upload an image or turn on their web camera and have the application detect if there is a rubber duck present in the picture/camera! :)
@@ -123,6 +123,8 @@ But this brought up the importance of speed and user experience. Is it really wo
 So to recap, after a lot of manual experimentation (this is what you would usually use GridSearchCV or something for haha) and reflection on user experience, I decided to go for 320 for my MaxLabel parameter and 35 for my MinConfidence parameter
 
 And with THAT, the project was a wrap :)
+
+Edit: When I was recording the showcase of the problem, I did do one final change in refactoring the Rekognition code so that we don't have to create a new Rekognition object every time the get_rekognition_data function is called
 
 http://istherearubberduckinthisimage.com/ is available! I'm buying that!! :D
 
