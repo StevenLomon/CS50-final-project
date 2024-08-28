@@ -2,14 +2,16 @@ Is there a Rubber Duck in this Image?
 
 My final project for Harvard's CS50 course!
 Video demo: https://www.youtube.com/watch?v=7oBrnQxvCRE&t=6s
+Try it out here: istherearubberduckinthisimage.se
 
-Description:
+## Description
 Allows the user to either upload an image or turn on their web camera and have the application detect if there is a rubber duck present in the picture/camera! :)
 
 This is a project that is rather silly in nature and simply a fun showcase of this detection technology. But it can easily be adjusted for someone more useful in the real world such as identifying products in a store for inventory management, smart surveillance systems, identifying suspicious objects in the streets or ...
 
 I believe I've really got to practice taking imperfect action and fine tuning as I go which is super important when it comes to coding and large projects. Not getting crippled by analysis paralysis and instead being solution oriented. Failing forward!
 
+## Starting vision
 My complete starting vision now writing on the 5th of Aug 2024: 
 There will be a front-end web application with the title "Is there a Rubber Duck in this Image?" and the option to choose Upload Image or Turn on Camera.
 If the user uploads an image, the image will display on the screen and one of two things will happen. 1: There is no rubber duck in the image and so there are no bounding boxes applied. There is a text below the image that will say "No rubber duck detected :(". 2: There is a rubber duck in the image and so a bounding box will surround it with a percentage of how sure the model is that it is indeed a rubber duck. Below the image, the text "Rubber duck detected! :))" will be displayed.
@@ -20,8 +22,6 @@ Since I am far from a front-end developer, the style.css is rather shamelessly c
 The camera detection will take heavy inspiration from this video: https://www.youtube.com/watch?v=CeTR_-ALdRw
 The image recognition takes inspiration from the second project in this video: https://www.youtube.com/watch?v=akeSJBEWr3w
 I will follow NeuralNine's video pretty closely to set up the camera classifier but as for the Image Recognition using Amazon Rekognition, I will mostly use the help of ChatGPT. I believe the scope of this project is just enough! :)
-
-I hope that istherearubberduckinthisimage.com is available to buy!
 
 Journal:
 An S3 Bucket was created
@@ -126,7 +126,11 @@ And with THAT, the project was a wrap :)
 
 Edit: When I was recording the showcase of the problem, I did do one final change in refactoring the Rekognition code so that we don't have to create a new Rekognition object every time the get_rekognition_data function is called
 
-http://istherearubberduckinthisimage.com/ is available! I'm buying that!! :D
+## Web hosting
+istherearubberduckinthisimage.com is available! I'm buying that!! :D
+Edit: istherearubberduckinthisimage.se is available for 5kr for the fist year using the Swedish site one.com so I'm buying it there with the hope that I can migrate to istherearubberduckinthisimage.com in the future haha!
 
+The domain was bought at one.com and then set up using AWS Route 53 by setting up a new hosted zone. The newly bought domain of istherearubberduckinthisimage.se was entered and "Public Hosted Zone" was selected as Type. Once the hosted zone was created, the name servers that were created for the domain were entered in one.com under DNS settings. Once the settings were saved, a request to change the name servers were sent which can take up to 48 hours. 
+An EC2 instance was then set up. The Ubuntu AMI was chosen as well as t3.micro to stay in the free tier of AWS. All settings were left as their defauly values except for the Security group network settings: All HTTP and HTTPS traffic were checked to be allowed and SSH traffic only from my IP address. The instance was then launched.  
 
-Try it out here: 
+The instance was connected to using SSH and the newly created keypair login. 
