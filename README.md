@@ -126,11 +126,11 @@ And with THAT, the project was a wrap :)
 
 Edit: When I was recording the showcase of the problem, I did do one final change in refactoring the Rekognition code so that we don't have to create a new Rekognition object every time the get_rekognition_data function is called
 
-## Web hosting
+### Web hosting
 istherearubberduckinthisimage.com is available! I'm buying that!! :D
 Edit: istherearubberduckinthisimage.se is available for 5kr for the fist year using the Swedish site one.com so I'm buying it there with the hope that I can migrate to istherearubberduckinthisimage.com in the future haha!
 
 The domain was bought at one.com and then set up using AWS Route 53 by setting up a new hosted zone. The newly bought domain of istherearubberduckinthisimage.se was entered and "Public Hosted Zone" was selected as Type. Once the hosted zone was created, the name servers that were created for the domain were entered in one.com under DNS settings. Once the settings were saved, a request to change the name servers were sent which can take up to 48 hours. 
 An EC2 instance was then set up. The Ubuntu AMI was chosen as well as t3.micro to stay in the free tier of AWS. All settings were left as their defauly values except for the Security group network settings: All HTTP and HTTPS traffic were checked to be allowed and SSH traffic only from my IP address. The instance was then launched.  
 
-The instance was connected to using SSH and the newly created keypair login. 
+Once the instance was up and running, it was connected to using SSH and the newly created keypair login. Once on the Ubuntu virtual machine, the package list was updated and all necessary packages for hosting a Flask web application were installed, most importantly Nginx and Gunicorn. 
