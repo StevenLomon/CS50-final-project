@@ -22,7 +22,7 @@
         <!-- Fallback Favicon (ICO) -->
         <link rel="shortcut icon" href="images/favicon.ico">
 
-        <link href="/static/style.css" rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
         <title>Rubber Duck detector: {% block title %}{% endblock %}</title>
     </head>

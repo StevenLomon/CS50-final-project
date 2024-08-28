@@ -140,7 +140,7 @@ The solution to this turned out to be to first upgrade setuptools and wheel, upg
 The Flask app was now supposed to be able to be tested using 'gunicorn --bind 0.0.0.0:8000 wsgi:app' but another problem arised, there was no wsgi.py so it was created. The code block to run the app was also deleted from app.py to avoid redundant execution. For the longest time, the gunicorn bind command wouldn't work but it was fixed by deactivating the current virtual environment, deleting it and creating a new one.  
 
 Once Gunicorn was confirmed to be working, Nginx had to be set up. The following command was used to edit the Nginx file:  
-sudo nano /etc/nginx/sites-available/flaskapp  
+sudo vim /etc/nginx/sites-available/flaskapp  
 The following was added:  
 server {
     listen 80;
@@ -148,8 +148,8 @@ server {
         proxy_set_header Host $host;                                                                                                                        proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-    }                                                                                                                                                                                                                                                                                                       location /static {
-        alias /path/to/your/flask-app/static;
+    }                                                                                                                                                                                                                                                               location /static/ {
+    alias /home/ubuntu/CS50-final-project/static/;
     }
 }   
 The server block was enablind and nginx was restarted using the following:  
@@ -178,6 +178,13 @@ gunicorn --bind 0.0.0.0:8000 --timeout 60 wsgi:app
 Running Gunicorn in the background was enabled using nohup:  
 nohup gunicorn --bind 0.0.0.0:8000 wsgi:app &  
 
-The website was now available at the bought domain! But there was one final issue in that the CSS wasn't loading properly. This was fixed by 
+The website was now available at the bought domain! But there was one final issue in that the CSS wasn't loading properly. This was fixed by first of all changing the name from style.css to styles.css (convention), creating a subdirectory in static called css and placing it there rather than just in static (once again; convention that I didn't follow haha) and using the correct HTML link tag: Changing  
+<link href="/static/styles.css" rel="stylesheet">  
+to  
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">  
+nginx was also adjusted to be correct (specifically the path to static) and restarted.  
+
+Now instead there was a 403 forbidden error!
+
 
 
