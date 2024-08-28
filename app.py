@@ -138,6 +138,9 @@ def image():
         rubber_duck_conf = bounding_box = bounding_box_data_json = s3_url_bb = None
 
         # Get rubber duck confidence score via interaction with Rekognition
+        print(f"Filename: {filename}")
+        print(f"Rekognition: {rekognition}")
+        print(f"Bucket name: {bucket_name}")
         try:
             rek_data = get_rekognition_data(filename, rekognition, bucket_name)
         except Exception as e:

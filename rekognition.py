@@ -24,6 +24,7 @@ def get_rekognition_data(filename, rek_object, bucket_name):
         MaxLabels = 320,
         MinConfidence = 35
     )
+    print("HEj")
 
     labels = response['Labels']
     filtered_labels = [label for label in labels if label.get('Confidence') > 10 and label.get('Name') in rubber_duck_labels]
