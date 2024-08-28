@@ -154,6 +154,18 @@ I tried so much here as well.
 
 Aaaaand... I gave up on the EC2 instance. Fuck that. Especially now that I found out that there are other AWS options that are serverless. 
 
-### Web Hosting using AWS Elastic Beanstalk
+### Web Hosting using AWS Elastic Beanstalk (was not used either, it's GARBAGE)
 (This is my first time using Beanstalk!)
-After the repository had been cleaned up a bit and it was back to a working version, a Procfile was created with the following content: web: python application.py, and the Elastic Beanstalk CLI was installed using pip install awsebcli
+After the repository had been cleaned up a bit and it was back to a working version, a Procfile was created with the following content: web: python application.py, and the Elastic Beanstalk CLI was installed using pip install awsebcli. When running pip installed, it displayed that there were dependency issues which were fixed with:  
+pip install --upgrade awscli  
+pip install --upgrade boto3 botocore s3transfer  
+
+The Elastic Beanstalk application was suppoed to be initialized by running 'eb init' but this only showed yet another error message saying there was a version conflict between botocore and awsebcli. This was solved by deactivating and deleting the current virtual environment, creating a new one, and pip installing after the following to avoid dependency issues:
+boto3==1.35.7
+botocore==1.35.7
+awscli==1.34.7
+awsebcli==3.20.10
+I was not able to resolve this
+
+### Web Hosting using PythonAnywhere
+This was the last resort, I was so close to give up on the web hosting
