@@ -184,7 +184,23 @@ to
 <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">  
 nginx was also adjusted to be correct (specifically the path to static) and restarted.  
 
-Now instead there was a 403 forbidden error!
+Now instead there was a 403 forbidden error!  
+The ownership of the static directory was updated with:  
+sudo chown -R www-data:www-data /home/ubuntu/CS50-final-project/static/  
+And permissions were updated with the following (I don't understand this at all, I had tapped out and just wanted it to work):  
+sudo find /home/ubuntu/CS50-final-project/static/ -type d -exec chmod 755 {} \;  
+sudo find /home/ubuntu/CS50-final-project/static/ -type f -exec chmod 644 {} \;  
+
+My mind was a jumble mess at this point but running this command: ls -ld /home/ubuntu /home/ubuntu/CS50-final-project  
+showed what the problem was:  
+drwxr-x--- 7 ubuntu   ubuntu   4096 Aug 28 12:08 /home/ubuntu  
+drwxrwxr-x 8 www-data www-data 4096 Aug 28 11:54 /home/ubuntu/CS50-final-project  
+One of the directories was owned by 'ubuntu' and one by 'www-data'. This was fixed by first making sure that the parent directory /home/ubuntu was accessible to the www-data user with the following command:  
+sudo chmod 755 /home/ubuntu  
+Another things that was causing problems (I think haha) was that the flask_session folder was owned by ubuntu and not www-data.  
+
+AND BY FIXING THIS IS IS ACTUALLY FULLY WORKING WITH THE CSS SHOWING!!!!!! The ONLY thing now is the favicon!  
+
 
 
 
