@@ -1,6 +1,7 @@
 Is there a Rubber Duck in this Image?
 
 My final project for Harvard's CS50 course! Video demo: https://www.youtube.com/watch?v=7oBrnQxvCRE&t=6s
+Try it out here: istherearubberduckinthisimage.se
 
 Description: Allows the user to either upload an image or turn on their web camera and have the application detect if there is a rubber duck present in the picture/camera! :)
 
@@ -72,4 +73,87 @@ Edit: When I was recording the showcase of the problem, I did do one final chang
 
 http://istherearubberduckinthisimage.com/ is available! I'm buying that!! :D
 
-Try it out here:
+### Web hosting
+istherearubberduckinthisimage.com is available! I'm buying that!! :D
+Edit: istherearubberduckinthisimage.se is available for 5kr for the fist year using the Swedish site one.com so I'm buying it there with the hope that I can migrate to istherearubberduckinthisimage.com in the future haha!
+
+The domain was bought at one.com and then set up using AWS Route 53 by setting up a new hosted zone. The newly bought domain of istherearubberduckinthisimage.se was entered and "Public Hosted Zone" was selected as Type. Once the hosted zone was created, the name servers that were created for the domain were entered in one.com under DNS settings. Once the settings were saved, a request to change the name servers were sent which can take up to 48 hours. 
+An EC2 instance was then set up. The Ubuntu AMI was chosen as well as t3.micro to stay in the free tier of AWS. All settings were left as their defauly values except for the Security group network settings: All HTTP and HTTPS traffic were checked to be allowed and SSH traffic only from my IP address. The instance was then launched.  
+
+Once the instance was up and running, it was connected to using SSH and the newly created keypair login. Once on the Ubuntu virtual machine, the package list was updated and all necessary packages for hosting a Flask web application were installed, most importantly Nginx and Gunicorn. The repository was cloned using 'git clone' and the GitHub repo web URL. Once the virtual environment was set up, an error occured when trying to install all dependencies using the requirements.txt file. The solution to this turned out to be to manually install 'python3-distutils', 'setuptools' and 'wheel' to the EC2 instance. Once these were installed, another dependency issue arised: "AttributeError: module 'pkgutil' has no attribute 'ImpImporter'. Did you mean: 'zipimporter'?
+      [end of output]"  
+The solution to this turned out to be to first upgrade setuptools and wheel, upgrade to the latest version of pip, remove scipy from requirements (it wasn't even used so I have no idea why it was in there) and use numpy 2.1.0 instead of 1.24.0.  
+
+The Flask app was now supposed to be able to be tested using 'gunicorn --bind 0.0.0.0:8000 wsgi:app' but another problem arised, there was no wsgi.py so it was created. The code block to run the app was also deleted from app.py to avoid redundant execution. For the longest time, the gunicorn bind command wouldn't work but it was fixed by deactivating the current virtual environment, deleting it and creating a new one.  
+
+Once Gunicorn was confirmed to be working, Nginx had to be set up. The following command was used to edit the Nginx file:  
+sudo vim /etc/nginx/sites-available/flaskapp  
+The following was added:  
+server {
+    listen 80;
+    server_name istherearubberduckinthisimage.se;                                                                                                                                                                                                                                                           location / {                                                                                                                                            proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;                                                                                                                        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }                                                                                                                                                                                                                                                               location /static/ {
+    alias /home/ubuntu/CS50-final-project/static/;
+    }
+}   
+The server block was enablind and nginx was restarted using the following:  
+sudo ln -s /etc/nginx/sites-available/flaskapp /etc/nginx/sites-enabled  
+sudo nginx -t  
+sudo systemctl restart nginx  
+I was greeted with the following:  
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok  
+nginx: configuration file /etc/nginx/nginx.conf test is successful  
+
+Once everything was set up on the instance level, an "A" record in Route 53 was created pointing to the EC2 instance’s public IP address, making sure that all domain directs traffic to the Flask application. Except for the Public IP address for Value, all values were left as the default values.  
+
+Once the "A" record was created, the web application was secured with SSL. Certbot was installed on the EC2 instance:  
+sudo apt-get install certbot python3-certbot-nginx  
+The SSL certificate was obtained and installed using:  
+sudo certbot --nginx -d istherearubberduckinthisimage.se -d istherearubberduckinthisimage.se  
+Consider donating!  
+https://letsencrypt.org/donate/  
+https://supporters.eff.org/donate/support-effs-work-lets-encrypt  
+I will as soon as I have disposable income hahaha.  
+
+Upon first trying to access the site at istherearubberduckinthisimage.se, I got a 504 Gateway timeout error. And these were to steps taken to try and fix it:
+1. Increasing the Gunicorn Timeout:  
+gunicorn --bind 0.0.0.0:8000 --timeout 60 wsgi:app  
+(No other step was needed since I quickly realized that I earlier killed this very proccess that keeps the web server running hahaha)
+Running Gunicorn in the background was enabled using nohup:  
+nohup gunicorn --bind 0.0.0.0:8000 wsgi:app &  
+
+The website was now available at the bought domain! But there was one final issue in that the CSS wasn't loading properly. This was fixed by first of all changing the name from style.css to styles.css (convention), creating a subdirectory in static called css and placing it there rather than just in static (once again; convention that I didn't follow haha) and using the correct HTML link tag: Changing  
+<link href="/static/styles.css" rel="stylesheet">  
+to  
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">  
+nginx was also adjusted to be correct (specifically the path to static) and restarted.  
+
+Now instead there was a 403 forbidden error!  
+The ownership of the static directory was updated with:  
+sudo chown -R www-data:www-data /home/ubuntu/CS50-final-project/static/  
+And permissions were updated with the following (I don't understand this at all, I had tapped out and just wanted it to work):  
+sudo find /home/ubuntu/CS50-final-project/static/ -type d -exec chmod 755 {} \;  
+sudo find /home/ubuntu/CS50-final-project/static/ -type f -exec chmod 644 {} \;  
+
+My mind was a jumble mess at this point but running this command: ls -ld /home/ubuntu /home/ubuntu/CS50-final-project  
+showed what the problem was:  
+drwxr-x--- 7 ubuntu   ubuntu   4096 Aug 28 12:08 /home/ubuntu  
+drwxrwxr-x 8 www-data www-data 4096 Aug 28 11:54 /home/ubuntu/CS50-final-project  
+One of the directories was owned by 'ubuntu' and one by 'www-data'. This was fixed by first making sure that the parent directory /home/ubuntu was accessible to the www-data user with the following command:  
+sudo chmod 755 /home/ubuntu  
+Another things that was causing problems (I think haha) was that the flask_session folder was owned by ubuntu and not www-data.  
+
+AND BY FIXING THIS IS IS ACTUALLY FULLY WORKING WITH THE CSS SHOWING!!!!!! (After 2h in debugging hell together with ChatGPT). 
+(The favicon is currently not showing for me but it was showing for a friend so I'm not worried about that at all really for now.)
+
+Another problem was the uploads folder since it was in .gitignore haha. This was simply fixed by adding a directory to the EC2 instance with mkdir and setting the permissions for it. (It was not that easy *sigh* haha)
+I tried so much here as well. 
+
+Aaaaand... I gave up on the EC2 instance. Fuck that. Especially now that I found out that there are other AWS options that are serverless. 
+
+### Web Hosting using AWS Elastic Beanstalk
+(This is my first time using Beanstalk!)
+After the repository had been cleaned up a bit and it was back to a working version, a Procfile was created with the following content: web: python application.py, and the Elastic Beanstalk CLI was installed using pip install awsebcli
