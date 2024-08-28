@@ -14,17 +14,21 @@ boundinx_box_labels = rubber_duck_labels + ['Helmet']
 
 def get_rekognition_data(filename, rek_object, bucket_name):
     # Response object to fetch labels from image
-    response = rek_object.detect_labels(
-        Image = {
-            'S3Object': {
-                'Bucket': bucket_name,
-                'Name': filename
+    try:
+        # Response object to fetch labels from image
+        response = rek_object.detect_labels(
+            Image={
+                'S3Object': {
+                    'Bucket': bucket_name,
+                    'Name': filename
+                },
             },
-        },
-        MaxLabels = 320,
-        MinConfidence = 35
-    )
-    print("HEj")
+            MaxLabels=320,
+            MinConfidence=35
+        )
+        print("Response:", response)
+    except Exception as e:
+        print("Error:", e)
 
     labels = response['Labels']
     filtered_labels = [label for label in labels if label.get('Confidence') > 10 and label.get('Name') in rubber_duck_labels]
