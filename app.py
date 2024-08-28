@@ -1,4 +1,5 @@
 import os, sqlite3, json
+from datetime import datetime
 from flask import Flask, g, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
 
@@ -209,3 +210,8 @@ def result(result_id):
 @app.route("/camera")
 def camera():
     return render_template("camera.html")
+
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
