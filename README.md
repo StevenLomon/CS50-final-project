@@ -137,4 +137,47 @@ Once the instance was up and running, it was connected to using SSH and the newl
       [end of output]"  
 The solution to this turned out to be to first upgrade setuptools and wheel, upgrade to the latest version of pip, remove scipy from requirements (it wasn't even used so I have no idea why it was in there) and use numpy 2.1.0 instead of 1.24.0.  
 
-The Flask app was now supposed to be able to be tested using 'gunicorn --bind 0.0.0.0:8000 wsgi:app' but another problem arised, there was no wsgi.py so it was created. The code block to run the app was also deleted from app.py to avoid redundant execution.   
+The Flask app was now supposed to be able to be tested using 'gunicorn --bind 0.0.0.0:8000 wsgi:app' but another problem arised, there was no wsgi.py so it was created. The code block to run the app was also deleted from app.py to avoid redundant execution. For the longest time, the gunicorn bind command wouldn't work but it was fixed by deactivating the current virtual environment, deleting it and creating a new one.  
+
+Once Gunicorn was confirmed to be working, Nginx had to be set up. The following command was used to edit the Nginx file:  
+sudo nano /etc/nginx/sites-available/flaskapp  
+The following was added:  
+server {
+    listen 80;
+    server_name istherearubberduckinthisimage.se;                                                                                                                                                                                                                                                           location / {                                                                                                                                            proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;                                                                                                                        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }                                                                                                                                                                                                                                                                                                       location /static {
+        alias /path/to/your/flask-app/static;
+    }
+}   
+The server block was enablind and nginx was restarted using the following:  
+sudo ln -s /etc/nginx/sites-available/flaskapp /etc/nginx/sites-enabled  
+sudo nginx -t  
+sudo systemctl restart nginx  
+I was greeted with the following:  
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok  
+nginx: configuration file /etc/nginx/nginx.conf test is successful  
+
+Once everything was set up on the instance level, an "A" record in Route 53 was created pointing to the EC2 instance’s public IP address, making sure that all domain directs traffic to the Flask application. Except for the Public IP address for Value, all values were left as the default values.  
+
+Once the "A" record was created, the web application was secured with SSL. Certbot was installed on the EC2 instance:  
+sudo apt-get install certbot python3-certbot-nginx  
+The SSL certificate was obtained and installed using:  
+sudo certbot --nginx -d istherearubberduckinthisimage.se -d istherearubberduckinthisimage.se  
+Consider donating!  
+https://letsencrypt.org/donate/  
+https://supporters.eff.org/donate/support-effs-work-lets-encrypt  
+I will as soon as I have disposable income hahaha.  
+
+Upon first trying to access the site at istherearubberduckinthisimage.se, I got a 504 Gateway timeout error. And these were to steps taken to try and fix it:
+1. Increasing the Gunicorn Timeout:  
+gunicorn --bind 0.0.0.0:8000 --timeout 60 wsgi:app  
+(No other step was needed since I quickly realized that I earlier killed this very proccess that keeps the web server running hahaha)
+Running Gunicorn in the background was enabled using nohup:  
+nohup gunicorn --bind 0.0.0.0:8000 wsgi:app &  
+
+The website was now available at the bought domain! But there was one final issue in that the CSS wasn't loading properly. This was fixed by 
+
+
