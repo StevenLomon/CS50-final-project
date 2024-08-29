@@ -1,7 +1,8 @@
 Is there a Rubber Duck in this Image?
 
-My final project for Harvard's CS50 course! Video demo: https://www.youtube.com/watch?v=7oBrnQxvCRE&t=6s
-Try it out here: istherearubberduckinthisimage.se
+My final project for Harvard's CS50 course!  
+Video demo: https://www.youtube.com/watch?v=7oBrnQxvCRE  
+Try it out here: istherearubberduckinthisimage.se  
 
 Description: Allows the user to either upload an image or turn on their web camera and have the application detect if there is a rubber duck present in the picture/camera! :)
 
