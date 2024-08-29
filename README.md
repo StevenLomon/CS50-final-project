@@ -18,9 +18,9 @@ I'm thinking to build the web application in Flask but eventually maybe migrate 
 
 I hope that istherearubberduckinthisimage.com is available to buy!
 
-## Journal
+### Journal
 
-### S3 Bucket and setting up IAM and other AWS set up
+#### S3 Bucket and setting up IAM and other AWS set up
 An S3 Bucket was created An IAM User was created that has full access to S3 and AWS Rekognition (I realized mid-project that AWS Rekognition is not available in the Stockholm region haha, so I decided to re-create the Bucket and use Frankfurt (eu-central-1) since Stockholm and Frankfurt are in the same time zone. A list of service availability by region can be found here: https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/)
 
 After succesfully setting up and implementing Rekognition and playing around to see which labels it can and can’t snap up, it quickly became evident that “Rubber duck” is not a label. But it can detect “Duck” with 98.51734924316406 confidence and “Toy” with 57.209102630615234 confidence. This was the ticket haha; Duck + Toy = Rubber duck. Some code was written to implement this logic of combining the labels of Duck and Toy, taking the average of their confidence to get Rubber Duck confidence haha!
