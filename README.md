@@ -1,4 +1,4 @@
-Is there a Rubber Duck in this Image?
+# Is there a Rubber Duck in this Image?
 
 My final project for Harvard's CS50 course!  
 Video demo: https://www.youtube.com/watch?v=7oBrnQxvCRE  
