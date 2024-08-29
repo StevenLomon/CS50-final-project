@@ -6,12 +6,12 @@ Try it out here: http://istherearubberduckinthisimage.se (HTTP until HTTPS becom
 
 I believe I've really got to practice taking imperfect action and fine tuning as I go which is super important when it comes to coding and large projects. Not getting crippled by analysis paralysis and instead being solution oriented. Failing forward!
 
-### Description
+## Description
 Allows the user to either upload an image or turn on their web camera and have the application detect if there is a rubber duck present in the picture/camera! :)
 
 This is a project that is rather silly in nature and simply a fun showcase of this detection technology. But it can easily be adjusted for someone more useful in the real world such as identifying products in a store for inventory management, smart surveillance systems or identifying suspicious objects in the streets.
 
-### Starting vision
+## Starting vision
 My complete starting vision now writing on the 5th of Aug 2024: There will be a front-end web application with the title "Is there a Rubber Duck in this Image?" and the option to choose Upload Image or Turn on Camera. If the user uploads an image, the image will display on the screen and one of two things will happen. 1: There is no rubber duck in the image and so there are no bounding boxes applied. There is a text below the image that will say "No rubber duck detected :(". 2: There is a rubber duck in the image and so a bounding box will surround it with a percentage of how sure the model is that it is indeed a rubber duck. Below the image, the text "Rubber duck detected! :))" will be displayed. If the user instead presses Turn on Camera, they will be asked for permission to turn on the camera of their computer. If no rubber duck is visible for the camera as it opens, there will be a text under the camera window saying "No rubber duck detected." As soon as a rubber duck enters the periphery of the camera, the text will be changed to "Rubber duck detected! :)". I don't think bounding boxes will be implemented in this mode but we'll see!
 
 I'm thinking to build the web application in Flask but eventually maybe migrate it to Django. But Flask for now. Enough vision to get me going is that there will be an index route and one route for each option represented by each button? Since I am far from a front-end developer, the style.css is rather shamelessly copied from the Finance problem and modified haha. The camera detection will take heavy inspiration from this video: https://www.youtube.com/watch?v=CeTR_-ALdRw The image recognition takes inspiration from the second project in this video: https://www.youtube.com/watch?v=akeSJBEWr3w I will follow NeuralNine's video pretty closely to set up the camera classifier but as for the Image Recognition using Amazon Rekognition, I will mostly use the help of ChatGPT. I believe the scope of this project is just enough! :)
@@ -25,13 +25,12 @@ An S3 Bucket was created An IAM User was created that has full access to S3 and 
 
 After succesfully setting up and implementing Rekognition and playing around to see which labels it can and can’t snap up, it quickly became evident that “Rubber duck” is not a label. But it can detect “Duck” with 98.51734924316406 confidence and “Toy” with 57.209102630615234 confidence. This was the ticket haha; Duck + Toy = Rubber duck. Some code was written to implement this logic of combining the labels of Duck and Toy, taking the average of their confidence to get Rubber Duck confidence haha!
 
-I then started to code and implement the Flask front end. I made sure that the button on the index front page linked correctly to the image route and that the image route can be reached by clicking the Upload Image button. The biggest lesson to take away from being stuck here for a little while is that the actions in the .html files should link to the routes, not html files
+### The Flask front-end
+Coding and implementation of the Flask front end then commenced. (I made sure that the button on the index front page linked correctly to the image route and that the image route can be reached by clicking the Upload Image button. The biggest lesson to take away from being stuck here for a little while is that the actions in the .html files should link to the routes, not html files haha)
 
-All image validation was added and then instead of saving the image locally to an uploads folder, the image is uploaded to our S3 bucket like we tried out in rekognition.py. Two things of importance:
-
-I had to use s3.upload_fileobj and not s3.upload_file since it's a file uploaded through a Flask form and not stored locally on my filesystem. In a web application, it's more secure to handle files in memory (using file-like objects) rather than saving them to disk, which might expose them to unintended access!
-It was important that I added a file.seek(0) before uploading the image. I managed to upload an image to S3 before adding that little piece of code and the image was corrupted and couldn't be opened
-Once an image is completely validated and uploaded to the S3 bucket we
+All image validation was added and then instead of saving the image locally to an uploads folder, the image is uploaded to our S3 bucket like we tried out in rekognition.py. Two things of importance:  
+1. s3.upload_fileobj had to be used and not s3.upload_file since it's a file uploaded through a Flask form and not stored locally on my filesystem. In a web application, it's more secure to handle files in memory (using file-like objects) rather than saving them to disk, which might expose them to unintended access! (THIS CHANGED LATER HOWEVER)
+2. It was important that file.seek(0) was added before uploading the image. An image to S3 could be uploaded before adding that little piece of code and the image was corrupted and couldn't be opened  
 
 Interact with Rekognition to get a rubber duck confidence score
 Store the result in an SQLite3 database that I will create shortly
@@ -77,22 +76,26 @@ Edit: When I was recording the showcase of the problem, I did do one final chang
 
 http://istherearubberduckinthisimage.com/ is available! I'm buying that!! :D
 
-### Web hosting
+## Web hosting
 istherearubberduckinthisimage.com is available! I'm buying that!! :D
 Edit: istherearubberduckinthisimage.se is available for 5kr for the fist year using the Swedish site one.com so I'm buying it there with the hope that I can migrate to istherearubberduckinthisimage.com in the future haha!
 
-The domain was bought at one.com and then set up using AWS Route 53 by setting up a new hosted zone. The newly bought domain of istherearubberduckinthisimage.se was entered and "Public Hosted Zone" was selected as Type. Once the hosted zone was created, the name servers that were created for the domain were entered in one.com under DNS settings. Once the settings were saved, a request to change the name servers were sent which can take up to 48 hours. 
+### Buying the domain and setting up AWS Route 53
+The domain was bought at one.com and then set up using AWS Route 53 by setting up a new hosted zone. The newly bought domain of istherearubberduckinthisimage.se was entered and "Public Hosted Zone" was selected as Type. Once the hosted zone was created, the name servers that were created for the domain were entered in one.com under DNS settings. Once the settings were saved, a request to change the name servers were sent which can take up to 48 hours.  
+
+### Setting up the EC2 instance (ended up not being used)
 An EC2 instance was then set up. The Ubuntu AMI was chosen as well as t3.micro to stay in the free tier of AWS. All settings were left as their defauly values except for the Security group network settings: All HTTP and HTTPS traffic were checked to be allowed and SSH traffic only from my IP address. The instance was then launched.  
 
-Once the instance was up and running, it was connected to using SSH and the newly created keypair login. Once on the Ubuntu virtual machine, the package list was updated and all necessary packages for hosting a Flask web application were installed, most importantly Nginx and Gunicorn. The repository was cloned using 'git clone' and the GitHub repo web URL. Once the virtual environment was set up, an error occured when trying to install all dependencies using the requirements.txt file. The solution to this turned out to be to manually install 'python3-distutils', 'setuptools' and 'wheel' to the EC2 instance. Once these were installed, another dependency issue arised: "AttributeError: module 'pkgutil' has no attribute 'ImpImporter'. Did you mean: 'zipimporter'?
-      [end of output]"  
+Once the instance was up and running, it was connected to using SSH and the newly created keypair login. Once on the Ubuntu virtual machine, the package list was updated and all necessary packages for hosting a Flask web application were installed, most importantly Nginx and Gunicorn. The repository was cloned using 'git clone' and the GitHub repo web URL. Once the virtual environment was set up, an error occured when trying to install all dependencies using the requirements.txt file. The solution to this turned out to be to manually install 'python3-distutils', 'setuptools' and 'wheel' to the EC2 instance. Once these were installed, another dependency issue arised: 
+`"AttributeError: module 'pkgutil' has no attribute 'ImpImporter'. Did you mean: 'zipimporter'? [end of output]"`  
 The solution to this turned out to be to first upgrade setuptools and wheel, upgrade to the latest version of pip, remove scipy from requirements (it wasn't even used so I have no idea why it was in there) and use numpy 2.1.0 instead of 1.24.0.  
 
-The Flask app was now supposed to be able to be tested using 'gunicorn --bind 0.0.0.0:8000 wsgi:app' but another problem arised, there was no wsgi.py so it was created. The code block to run the app was also deleted from app.py to avoid redundant execution. For the longest time, the gunicorn bind command wouldn't work but it was fixed by deactivating the current virtual environment, deleting it and creating a new one.  
+The Flask app was now supposed to be able to be tested using 'gunicorn --bind 0.0.0.0:8000 wsgi:app' but another problem arised; there was no wsgi.py so it was created. The code block to run the app was also deleted from app.py to avoid redundant execution. For the longest time, the gunicorn bind command wouldn't work but it was fixed by deactivating the current virtual environment, deleting it and creating a new one.  
 
 Once Gunicorn was confirmed to be working, Nginx had to be set up. The following command was used to edit the Nginx file:  
 sudo vim /etc/nginx/sites-available/flaskapp  
 The following was added:  
+```
 server {
     listen 80;
     server_name istherearubberduckinthisimage.se;                                                                                                                                                                                                                                                           location / {                                                                                                                                            proxy_pass http://127.0.0.1:8000;
@@ -103,6 +106,7 @@ server {
     alias /home/ubuntu/CS50-final-project/static/;
     }
 }   
+```
 The server block was enablind and nginx was restarted using the following:  
 sudo ln -s /etc/nginx/sites-available/flaskapp /etc/nginx/sites-enabled  
 sudo nginx -t  
