@@ -161,10 +161,10 @@ After the repository had been cleaned up a bit and it was back to a working vers
 `pip install --upgrade boto3 botocore s3transfer`  
 
 The Elastic Beanstalk application was suppoed to be initialized by running 'eb init' but this only showed yet another error message saying there was a version conflict between botocore and awsebcli. This was solved by deactivating and deleting the current virtual environment, creating a new one, and pip installing after the following to avoid dependency issues:
-boto3==1.35.7
-botocore==1.35.7
-awscli==1.34.7
-awsebcli==3.20.10
+`boto3==1.35.7`  
+`botocore==1.35.7`  
+`awscli==1.34.7`  
+`awsebcli==3.20.10`  
 I was not able to resolve this. The CLI is broken!!
 
 Instead, I will use the Console version of Elastic Beanstalk. To prepare the Flask application for deployment a Procfile was created, the static repository was refactored to follow Flask stylistic guidelines (and changes was made in boilerplate.html to match) and a runtime.txt with the version of Python used was created. Everything was zipped and uploaded to Beanstalk. The EB application was set up with most values as default. Once the environment was launched and the application was up and running, I could simply use the earlier created hosted zone in Route 53 (so it was not in vain haha) to create an "A" record as an Alias pointing it directly to the Elastic Beanstalk environment. 
