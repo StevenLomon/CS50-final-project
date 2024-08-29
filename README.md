@@ -2,25 +2,28 @@ Is there a Rubber Duck in this Image?
 
 My final project for Harvard's CS50 course!  
 Video demo: https://www.youtube.com/watch?v=7oBrnQxvCRE  
-Try it out here: https://istherearubberduckinthisimage.se  
-
-Description: Allows the user to either upload an image or turn on their web camera and have the application detect if there is a rubber duck present in the picture/camera! :)
-
-This is a project that is rather silly in nature and simply a fun showcase of this detection technology. But it can easily be adjusted for someone more useful in the real world such as identifying products in a store for inventory management, smart surveillance systems, identifying suspicious objects in the streets or ...
+Try it out here: http://istherearubberduckinthisimage.se (HTTP until HTTPS becomes available. DNS changes can take some time to propagate :') )  
 
 I believe I've really got to practice taking imperfect action and fine tuning as I go which is super important when it comes to coding and large projects. Not getting crippled by analysis paralysis and instead being solution oriented. Failing forward!
 
+### Description
+Allows the user to either upload an image or turn on their web camera and have the application detect if there is a rubber duck present in the picture/camera! :)
+
+This is a project that is rather silly in nature and simply a fun showcase of this detection technology. But it can easily be adjusted for someone more useful in the real world such as identifying products in a store for inventory management, smart surveillance systems or identifying suspicious objects in the streets.
+
+### Starting vision
 My complete starting vision now writing on the 5th of Aug 2024: There will be a front-end web application with the title "Is there a Rubber Duck in this Image?" and the option to choose Upload Image or Turn on Camera. If the user uploads an image, the image will display on the screen and one of two things will happen. 1: There is no rubber duck in the image and so there are no bounding boxes applied. There is a text below the image that will say "No rubber duck detected :(". 2: There is a rubber duck in the image and so a bounding box will surround it with a percentage of how sure the model is that it is indeed a rubber duck. Below the image, the text "Rubber duck detected! :))" will be displayed. If the user instead presses Turn on Camera, they will be asked for permission to turn on the camera of their computer. If no rubber duck is visible for the camera as it opens, there will be a text under the camera window saying "No rubber duck detected." As soon as a rubber duck enters the periphery of the camera, the text will be changed to "Rubber duck detected! :)". I don't think bounding boxes will be implemented in this mode but we'll see!
 
 I'm thinking to build the web application in Flask but eventually maybe migrate it to Django. But Flask for now. Enough vision to get me going is that there will be an index route and one route for each option represented by each button? Since I am far from a front-end developer, the style.css is rather shamelessly copied from the Finance problem and modified haha. The camera detection will take heavy inspiration from this video: https://www.youtube.com/watch?v=CeTR_-ALdRw The image recognition takes inspiration from the second project in this video: https://www.youtube.com/watch?v=akeSJBEWr3w I will follow NeuralNine's video pretty closely to set up the camera classifier but as for the Image Recognition using Amazon Rekognition, I will mostly use the help of ChatGPT. I believe the scope of this project is just enough! :)
 
 I hope that istherearubberduckinthisimage.com is available to buy!
 
-Journal: An S3 Bucket was created An IAM User was created that has full access to S3 and AWS Rekognition Since I realized mid-project that AWS Rekognition is not available in the Stockholm region, I decided to re-create the Bucket and use Frankfurt (eu-central-1) since Stockholm and Frankfurt are in the same time zone. A list of service availability by region can be found here: https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/
+## Journal
 
-After succesfully setting up and implementing Rekognition and playing around to see which labels it can and can’t snap up, I found that “Rubber duck” is not a label, but it can detect “Duck” with 98.51734924316406 confidence and “Toy” with 57.209102630615234 confidence. This was my ticket haha; Duck + Toy = Rubber duck
+### S3 Bucket and setting up IAM and other AWS set up
+An S3 Bucket was created An IAM User was created that has full access to S3 and AWS Rekognition (I realized mid-project that AWS Rekognition is not available in the Stockholm region haha, so I decided to re-create the Bucket and use Frankfurt (eu-central-1) since Stockholm and Frankfurt are in the same time zone. A list of service availability by region can be found here: https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/)
 
-I wrote some code to implement this logic of combining the labels of Duck and Toy, taking the average of their confidence to get Rubber Duck confidence haha!
+After succesfully setting up and implementing Rekognition and playing around to see which labels it can and can’t snap up, it quickly became evident that “Rubber duck” is not a label. But it can detect “Duck” with 98.51734924316406 confidence and “Toy” with 57.209102630615234 confidence. This was the ticket haha; Duck + Toy = Rubber duck. Some code was written to implement this logic of combining the labels of Duck and Toy, taking the average of their confidence to get Rubber Duck confidence haha!
 
 I then started to code and implement the Flask front end. I made sure that the button on the index front page linked correctly to the image route and that the image route can be reached by clicking the Upload Image button. The biggest lesson to take away from being stuck here for a little while is that the actions in the .html files should link to the routes, not html files
 
@@ -168,4 +171,13 @@ The Elastic Beanstalk application was suppoed to be initialized by running 'eb i
 `awsebcli==3.20.10`  
 I was not able to resolve this. The CLI is broken!!
 
-Instead, I will use the Console version of Elastic Beanstalk. To prepare the Flask application for deployment a Procfile was created, the static repository was refactored to follow Flask stylistic guidelines (and changes was made in boilerplate.html to match) and a runtime.txt with the version of Python used was created. Everything was zipped and uploaded to Beanstalk. The EB application was set up with most values as default. Once the environment was launched and the application was up and running, I could simply use the earlier created hosted zone in Route 53 (so it was not in vain haha) to create an "A" record as an Alias pointing it directly to the Elastic Beanstalk environment. 
+Instead, I will use the Console version of Elastic Beanstalk. To prepare the Flask application for deployment a Procfile was created, the static repository was refactored to follow Flask stylistic guidelines (and changes was made in boilerplate.html to match) and a runtime.txt with the version of Python used was created. Everything was zipped and uploaded to Beanstalk. The EB application was set up with most values as default. Once the environment was launched and the Health status was set to Green, the domain could be accessed. At first there was a 502 Bad Gateway error but this was swiftly fixed by correcting the Procfile to use app:app instead of application:app since the Flask app object is called app.py.  
+
+Once the application was up and running, I accessed the domain to actually see my web app! Elastic Beanstalk is amazing!! But upon running it, two problems occured (but they were easy to fix and all had to do with the EC2 instance profile permissions):  
+1. The EC2 instance profile did not have access to upload files to S3. This was easily fixed.  
+2. The EC2 instance profile did not have access to use Rekognition haha. But this was also easily fixed. 
+And the web application was running perfectly on the Beanstalk domain!!!   
+
+To use the bought domain, the earlier created hosted zone in Route 53 (so it was not in vain haha) could simply be used to create an "A" record as an Alias pointing it directly to the Elastic Beanstalk environment. The SSL certification created in the earlier EC2 instance was created in vain however, and instead a new one was created in AWS Certificate Manager. The certificate was easily validated using the hosted zone in Route 53.  
+
+Once the SSL certificate was validated (took less than 15 minutes!), it was added to the Elastic Beanstalk environment in the "Configure instance traffic and scaling" settings in Configurations by changing the Environment type to Load Balanced and adding a HTTPS 443 listener and attaching the created SSL certificate and choosing ELBSecurityPolicy-TLS-1-2-2017-01 as the SSL policy (apparently, it's a common one that strikes a good balance between security and compatibility for modern browsers and applications). And with that, the website was up and running securely with HTTPS!
