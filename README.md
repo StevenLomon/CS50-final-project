@@ -152,9 +152,9 @@ AND BY FIXING THIS IS IS ACTUALLY FULLY WORKING WITH THE CSS SHOWING!!!!!! (Afte
 Another problem was the uploads folder since it was in .gitignore haha. This was simply fixed by adding a directory to the EC2 instance with mkdir and setting the permissions for it. (It was not that easy *sigh* haha)
 I tried so much here as well. 
 
-Aaaaand... I gave up on the EC2 instance. Fuck that. Especially now that I found out that there are other AWS options that are serverless. 
+Aaaaand... I gave up on the EC2 instance. I'm so incredibly close. But fuck this. Especially now that I found out that there are other AWS options that are serverless. 
 
-### Web Hosting using AWS Elastic Beanstalk (was not used either, it's GARBAGE)
+### Web Hosting using AWS Elastic Beanstalk
 (This is my first time using Beanstalk!)
 After the repository had been cleaned up a bit and it was back to a working version, a Procfile was created with the following content: web: python application.py, and the Elastic Beanstalk CLI was installed using pip install awsebcli. When running pip installed, it displayed that there were dependency issues which were fixed with:  
 pip install --upgrade awscli  
@@ -165,7 +165,6 @@ boto3==1.35.7
 botocore==1.35.7
 awscli==1.34.7
 awsebcli==3.20.10
-I was not able to resolve this
+I was not able to resolve this. The CLI is broken!!
 
-### Web Hosting using PythonAnywhere
-This was the last resort, I was so close to give up on the web hosting
+Instead, I will use the Console version of Elastic Beanstalk. An application was set up with most values as default. Once the environment was launched and the application was up and running, I could simply use the earlier created hosted zone in Route 53 (so it was not in vain haha) to create an "A" record as an Alias pointing it directly to the Elastic Beanstalk environment. 
