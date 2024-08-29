@@ -160,7 +160,7 @@ After the repository had been cleaned up a bit and it was back to a working vers
 `pip install --upgrade awscli`  
 `pip install --upgrade boto3 botocore s3transfer`  
 
-The Elastic Beanstalk application was suppoed to be initialized by running 'eb init' but this only showed yet another error message saying there was a version conflict between botocore and awsebcli. This was solved by deactivating and deleting the current virtual environment, creating a new one, and pip installing after the following to avoid dependency issues:
+The Elastic Beanstalk application was suppoed to be initialized by running 'eb init' but this only showed yet another error message saying there was a version conflict between botocore and awsebcli. This was solved by deactivating and deleting the current virtual environment, creating a new one, and pip installing after the following to avoid dependency issues:  
 `boto3==1.35.7`  
 `botocore==1.35.7`  
 `awscli==1.34.7`  
