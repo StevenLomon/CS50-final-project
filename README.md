@@ -19,7 +19,7 @@ This is a project that is rather silly in nature and simply a fun showcase of th
 * Elastic Beanstalk
 * Route 53
 
-The project follows the following architecture:
+The project uses the following architecture:
 !["Project architecture diagram"](/project-architecure-diagram.png "Project architecture diagram")
 
 ## Starting vision
