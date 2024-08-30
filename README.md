@@ -150,7 +150,7 @@ Running Gunicorn in the background was enabled using nohup:
 `nohup gunicorn --bind 0.0.0.0:8000 wsgi:app &`  
 
 The website was now available at the bought domain! But there was one final issue in that the CSS wasn't loading properly. This was fixed by first of all changing the name from style.css to styles.css (convention), creating a subdirectory in static called css and placing it there rather than just in static (once again; convention that I didn't follow haha) and using the correct HTML link tag: Changing  
-`<link href="/static/styles.css" rel="stylesheet">`  
+<link href="/static/styles.css" rel="stylesheet">  
 to  
 <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">  
 nginx was also adjusted to be correct (specifically the path to static) and restarted.  
