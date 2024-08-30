@@ -187,9 +187,9 @@ The Elastic Beanstalk application was suppoed to be initialized by running 'eb i
 `botocore==1.35.7`  
 `awscli==1.34.7`  
 `awsebcli==3.20.10`  
-I was not able to resolve this. The CLI is broken!!
+(I was not able to resolve this. The EB CLI is broken!! Instead, I will use the Console version of Elastic Beanstalk.)
 
-Instead, I will use the Console version of Elastic Beanstalk. To prepare the Flask application for deployment a Procfile was created, the static repository was refactored to follow Flask stylistic guidelines (and changes was made in boilerplate.html to match) and a runtime.txt with the version of Python used was created. Everything was zipped and uploaded to Beanstalk. The EB application was set up with most values as default. Once the environment was launched and the Health status was set to Green, the domain could be accessed. At first there was a 502 Bad Gateway error but this was swiftly fixed by correcting the Procfile to use app:app instead of application:app since the Flask app object is called app.py.  
+ To prepare the Flask application for deployment a Procfile was created, the static repository was refactored to follow Flask stylistic guidelines (and changes was made in boilerplate.html to match) and a runtime.txt with the version of Python used was created. Everything was zipped and uploaded to Beanstalk. The EB application was set up with most values as default. Once the environment was launched and the Health status was set to Green, the domain could be accessed. At first there was a 502 Bad Gateway error but this was swiftly fixed by correcting the Procfile to use app:app instead of application:app since the Flask app object is called app.py.  
 
 Once the application was up and running, I accessed the domain to actually see my web app! Elastic Beanstalk is amazing!! But upon running it, two problems occured (but they were easy to fix and all had to do with the EC2 instance profile permissions):  
 1. The EC2 instance profile did not have access to upload files to S3. This was easily fixed.  
@@ -200,8 +200,8 @@ To use the bought domain, the earlier created hosted zone in Route 53 (so it was
 
 Once the SSL certificate was validated (took less than 15 minutes!), it was added to the Elastic Beanstalk environment in the "Configure instance traffic and scaling" settings in Configurations by changing the Environment type to Load Balanced and adding a HTTPS 443 listener and attaching the created SSL certificate and choosing ELBSecurityPolicy-TLS-1-2-2017-01 as the SSL policy (apparently, it's a common one that strikes a good balance between security and compatibility for modern browsers and applications).  
 
-And with that, the website was up and running securely with HTTPS!
-Once again, try it out here: http://istherearubberduckinthisimage.se (will be changed to HTTPS as soon as it is available!)
+And with that, the website was up and running! On HTTP for now haha.  
+Once again, try it out here: http://istherearubberduckinthisimage.se (will be changed to HTTPS as soon as it has been propagated!)
 
 ## End-of-project Reflections and Improvements
 This was a fun project that could tap into my past education with some AI and my future Data Engineering aspirations with some image validation and Amazon S3, all with a nice ribbon with all of our unified love for rubber ducks 🦆
