@@ -4,7 +4,9 @@ My final project for Harvard's CS50 course!
 Video demo: https://www.youtube.com/watch?v=7oBrnQxvCRE  
 Try it out here: http://istherearubberduckinthisimage.se (HTTP until HTTPS becomes available. DNS changes can take some time to propagate :') )  
 
-I believe I've really got to practice taking imperfect action and fine tuning as I go which is super important when it comes to coding and large projects. Not getting crippled by analysis paralysis and instead being solution oriented. Failing forward!
+!["Project architecture diagram"](/project-architecure-diagram.png "Project architecture diagram")
+
+I believe really got to practice taking imperfect action and fine tuning as I go which is super important when it comes to coding and large projects. Not getting crippled by analysis paralysis and instead being solution oriented. Failing forward!
 
 ## Description
 Allows the user to either upload an image or turn on their web camera and have the application detect if there is a rubber duck present in the picture/camera! :)
