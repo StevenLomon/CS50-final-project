@@ -150,27 +150,28 @@ Running Gunicorn in the background was enabled using nohup:
 `nohup gunicorn --bind 0.0.0.0:8000 wsgi:app &`  
 
 The website was now available at the bought domain! But there was one final issue in that the CSS wasn't loading properly. This was fixed by first of all changing the name from style.css to styles.css (convention), creating a subdirectory in static called css and placing it there rather than just in static (once again; convention that I didn't follow haha) and using the correct HTML link tag: Changing  
-<link href="/static/styles.css" rel="stylesheet">  
+`<link href="/static/styles.css" rel="stylesheet">`  
 to  
-<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">  
+`<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">`  
 nginx was also adjusted to be correct (specifically the path to static) and restarted.  
 
 Now instead there was a 403 forbidden error!  
 The ownership of the static directory was updated with:  
-sudo chown -R www-data:www-data /home/ubuntu/CS50-final-project/static/  
-And permissions were updated with the following (I don't understand this at all, I had tapped out and just wanted it to work):  
-sudo find /home/ubuntu/CS50-final-project/static/ -type d -exec chmod 755 {} \;  
-sudo find /home/ubuntu/CS50-final-project/static/ -type f -exec chmod 644 {} \;  
+`sudo chown -R www-data:www-data /home/ubuntu/CS50-final-project/static/`  
+And permissions were updated with the following: 
+`sudo find /home/ubuntu/CS50-final-project/static/ -type d -exec chmod 755 {} \;`  
+`sudo find /home/ubuntu/CS50-final-project/static/ -type f -exec chmod 644 {} \;`  
 
-My mind was a jumble mess at this point but running this command: ls -ld /home/ubuntu /home/ubuntu/CS50-final-project  
-showed what the problem was:  
+(My mind was an absolute jumble mess at this point, I didn't understand and just wanted it all to end :') )  
+
+Running this command: ls -ld /home/ubuntu /home/ubuntu/CS50-final-project showed what the problem was:  
 `drwxr-x--- 7 ubuntu   ubuntu   4096 Aug 28 12:08 /home/ubuntu`  
 `drwxrwxr-x 8 www-data www-data 4096 Aug 28 11:54 /home/ubuntu/CS50-final-project`  
 One of the directories was owned by 'ubuntu' and one by 'www-data'. This was fixed by first making sure that the parent directory /home/ubuntu was accessible to the www-data user with the following command:  
-sudo chmod 755 /home/ubuntu  
+`sudo chmod 755 /home/ubuntu`  
 Another things that was causing problems (I think haha) was that the flask_session folder was owned by ubuntu and not www-data.  
 
-AND BY FIXING THIS IS IS ACTUALLY FULLY WORKING WITH THE CSS SHOWING!!!!!! (After 2h in debugging hell together with ChatGPT). 
+AND BY FIXING THIS, IT WAS ACTUALLY FULLY WORKING WITH THE CSS SHOWING!!!!!! (After 2h in debugging hell together with ChatGPT). 
 (The favicon is currently not showing for me but it was showing for a friend so I'm not worried about that at all really for now.)
 
 Another problem was the uploads folder since it was in .gitignore haha. This was simply fixed by adding a directory to the EC2 instance with mkdir and setting the permissions for it. (It was not that easy *sigh* haha)
