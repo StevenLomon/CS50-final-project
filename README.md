@@ -88,11 +88,7 @@ So to recap, after a lot of manual experimentation (this is what you would usual
 
 And with THAT, the project was a wrap :)
 
-### Post-project edits and comments
-
 Edit: When I was recording the showcase of the problem, I did do one final change in refactoring the Rekognition code so that we don't have to create a new Rekognition object every time the get_rekognition_data function is called
-
-I will implement the Camera feature in the future! The vision there is to enable to laptop camera and detect a rubber duck with added bounding boxes as soon as one enters the frame
 
 ## Web hosting
 istherearubberduckinthisimage.com is available! I'm buying that!! :D
@@ -206,3 +202,10 @@ Once the SSL certificate was validated (took less than 15 minutes!), it was adde
 
 And with that, the website was up and running securely with HTTPS!
 Once again, try it out here: http://istherearubberduckinthisimage.se (will be changed to HTTPS as soon as it is available!)
+
+## End-of-project Reflections and Improvements
+This was a fun project that could tap into my past education with some AI and my future Data Engineering aspirations with some image validation and Amazon S3, all with a nice ribbon with all of our unified love for rubber ducks 🦆
+
+I could also have my brother that is way more competent in Front-End make the web app look a bit nicer
+
+The domain will be upgraded to .com as soon as I have dispsable income haha. And I will implement the Camera feature in the future! The vision there is to enable to laptop camera and detect a rubber duck with added bounding boxes as soon as one enters the frame
