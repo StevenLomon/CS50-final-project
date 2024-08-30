@@ -25,24 +25,22 @@ I hope that istherearubberduckinthisimage.com is available to buy!
 ### S3 Bucket and setting up IAM and other AWS set up
 An S3 Bucket was created An IAM User was created that has full access to S3 and AWS Rekognition (I realized mid-project that AWS Rekognition is not available in the Stockholm region haha, so I decided to re-create the Bucket and use Frankfurt (eu-central-1) since Stockholm and Frankfurt are in the same time zone. A list of service availability by region can be found here: https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/)
 
-After succesfully setting up and implementing Rekognition and playing around to see which labels it can and can’t snap up, it quickly became evident that “Rubber duck” is not a label. But it can detect “Duck” with 98.51734924316406 confidence and “Toy” with 57.209102630615234 confidence. This was the ticket haha; Duck + Toy = Rubber duck. Some code was written to implement this logic of combining the labels of Duck and Toy, taking the average of their confidence to get Rubber Duck confidence haha!
+After succesfully setting up and implementing Rekognition and playing around to see which labels it can and can’t snap up, it quickly became evident that “Rubber duck” is not a label. But it can detect “Duck” with 98.51734924316406 confidence and “Toy” with 57.209102630615234 confidence. This was the ticket haha; Duck + Toy = Rubber duck. Some code was written to implement this logic of combining the labels of Duck and Toy, taking the average of their confidence to get Rubber Duck confidence haha!  
+
+To display the uploaded image, public read had to be enabled as a Bucket Policy for the S3 bucket. Since this is not in production and just a rather silly project, this is okay.  
 
 ### The Flask front-end
 Coding and implementation of the Flask front end then commenced. (I made sure that the button on the index front page linked correctly to the image route and that the image route can be reached by clicking the Upload Image button. The biggest lesson to take away from being stuck here for a little while is that the actions in the .html files should link to the routes, not html files haha)
 
-All image validation was added and then instead of saving the image locally to an uploads folder, the image is uploaded to our S3 bucket like we tried out in rekognition.py. Two things of importance:  
+### Image validation
+All image validation was added and then instead of saving the image locally to an uploads folder, the image is uploaded to the S3 bucket (like I tried out earlier in rekognition.py). Two things of importance:  
 1. s3.upload_fileobj had to be used and not s3.upload_file since it's a file uploaded through a Flask form and not stored locally on my filesystem. In a web application, it's more secure to handle files in memory (using file-like objects) rather than saving them to disk, which might expose them to unintended access! (THIS CHANGED LATER HOWEVER)
 2. It was important that file.seek(0) was added before uploading the image. An image to S3 could be uploaded before adding that little piece of code and the image was corrupted and couldn't be opened  
 
-Interact with Rekognition to get a rubber duck confidence score
-Store the result in an SQLite3 database that I will create shortly
-Generate a unique result ID using uuid4
-Redirect to the result page where the result will be fetch using the resultID
+A max width of 400 pixels was applied to the displayed uploaded picture and a custom jinja filter was also added that is used when displaying the confidence score, very similar to the filter used in Finance.  
 
 ### Setting up the SQLite Database
 The SQLite db connection was set up without the CS50 training wheels and a duck_results table was created. (A things that tripped me up was using TEXT for the primary key ID since we're using a unique uuid string and not a simple auto-incremental integer. I also had to consult with ChatGPT on how to deal with thread safety when using database connections in Flask. The solution is create a separate db connection everytime we insert or update something. Also created a separate script to set up the initial table since the 'before_first_request' decorator is depreciated)  
-
-To display the uploaded image, public read had to be enabled as a Bucket Policy for the S3 bucket. Since this is not in production and just a rather silly project, this is okay. A max width of 400 pixels was applied to the displayed uploaded picture and a custom jinja filter was also added that is used when displaying the confidence score, very similar to the filter used in Finance.  
 
 After being able to display succesful results where an image of an actual rubber duck was uploaded came the other scenario: when a rubber duck is not in the picture. After some consulting and reflecting, it was decided that the best course of action was to change the table schema. A new column duck_found was added which will be either 0 or 1 and NOT NULL will be removed from the confidence_score column. This allows for an if statement in the result.html that uses the duck_found variable.  
 
@@ -63,7 +61,7 @@ try:
         s3.upload_fileobj(data, bucket_name, filename)
 ```
 
-(After having fixed this, brute forcing for about an hour, I encountered another smaller problem, more silly in nature: I'm just naïvely adding "-bb" to the entire filename haha, resulting in this error: "ValueError: unknown file extension: .jpg-bb". This was fixed rather simply by splitting the filename into base name and extension using)
+(After having fixed this, brute forcing for about an hour, I encountered another smaller problem, more silly in nature: I'm just naïvely adding "-bb" to the entire filename haha, resulting in this error: "ValueError: unknown file extension: .jpg-bb". This was fixed rather simply by splitting the filename into base name and extension using os.path.splitext; first time I used it haha)
 
 For quite a few moments there were problems seeing the bounding boxes. They could be seen on the locally saved image but not the one uploaded to S3 that is being displayed on the front end with Flask. The fix for this was to use upload_file instead of upload_fileobj since we're uploading a locally saved image and not a Flask in-memory file!  
 
@@ -106,10 +104,12 @@ Once the instance was up and running, it was connected to using SSH and the newl
 `"AttributeError: module 'pkgutil' has no attribute 'ImpImporter'. Did you mean: 'zipimporter'? [end of output]"`  
 The solution to this turned out to be to first upgrade setuptools and wheel, upgrade to the latest version of pip, remove scipy from requirements (it wasn't even used so I have no idea why it was in there) and use numpy 2.1.0 instead of 1.24.0.  
 
-The Flask app was now supposed to be able to be tested using 'gunicorn --bind 0.0.0.0:8000 wsgi:app' but another problem arised; there was no wsgi.py so it was created. The code block to run the app was also deleted from app.py to avoid redundant execution. For the longest time, the gunicorn bind command wouldn't work but it was fixed by deactivating the current virtual environment, deleting it and creating a new one.  
+The Flask app was now supposed to be able to be tested using  
+`gunicorn --bind 0.0.0.0:8000 wsgi:app`  
+but another problem arised; there was no wsgi.py so it was created. The code block to run the app was also deleted from app.py to avoid redundant execution. For the longest time, the gunicorn bind command wouldn't work but it was fixed by deactivating the current virtual environment, deleting it and creating a new one.  
 
 Once Gunicorn was confirmed to be working, Nginx had to be set up. The following command was used to edit the Nginx file:  
-sudo vim /etc/nginx/sites-available/flaskapp  
+`sudo vim /etc/nginx/sites-available/flaskapp`  
 The following was added:  
 ```
 server {
@@ -124,33 +124,33 @@ server {
 }   
 ```
 The server block was enablind and nginx was restarted using the following:  
-sudo ln -s /etc/nginx/sites-available/flaskapp /etc/nginx/sites-enabled  
-sudo nginx -t  
-sudo systemctl restart nginx  
-I was greeted with the following:  
-nginx: the configuration file /etc/nginx/nginx.conf syntax is ok  
-nginx: configuration file /etc/nginx/nginx.conf test is successful  
+`sudo ln -s /etc/nginx/sites-available/flaskapp /etc/nginx/sites-enabled`  
+`sudo nginx -t`  
+`sudo systemctl restart nginx`  
+The following was displayed in the terminal:  
+`nginx: the configuration file /etc/nginx/nginx.conf syntax is ok`  
+`nginx: configuration file /etc/nginx/nginx.conf test is successful`  
 
 Once everything was set up on the instance level, an "A" record in Route 53 was created pointing to the EC2 instance’s public IP address, making sure that all domain directs traffic to the Flask application. Except for the Public IP address for Value, all values were left as the default values.  
 
 Once the "A" record was created, the web application was secured with SSL. Certbot was installed on the EC2 instance:  
-sudo apt-get install certbot python3-certbot-nginx  
+`sudo apt-get install certbot python3-certbot-nginx`  
 The SSL certificate was obtained and installed using:  
-sudo certbot --nginx -d istherearubberduckinthisimage.se -d istherearubberduckinthisimage.se  
+`sudo certbot --nginx -d istherearubberduckinthisimage.se -d istherearubberduckinthisimage.se`  
 Consider donating!  
 https://letsencrypt.org/donate/  
 https://supporters.eff.org/donate/support-effs-work-lets-encrypt  
-I will as soon as I have disposable income hahaha.  
+(I will as soon as I have disposable income hahaha.)  
 
-Upon first trying to access the site at istherearubberduckinthisimage.se, I got a 504 Gateway timeout error. And these were to steps taken to try and fix it:
+Upon first trying to access the site at istherearubberduckinthisimage.se, a 504 Gateway timeout error was displayed. And these were to steps taken to try and fix it:
 1. Increasing the Gunicorn Timeout:  
-gunicorn --bind 0.0.0.0:8000 --timeout 60 wsgi:app  
+`gunicorn --bind 0.0.0.0:8000 --timeout 60 wsgi:app`  
 (No other step was needed since I quickly realized that I earlier killed this very proccess that keeps the web server running hahaha)
 Running Gunicorn in the background was enabled using nohup:  
-nohup gunicorn --bind 0.0.0.0:8000 wsgi:app &  
+`nohup gunicorn --bind 0.0.0.0:8000 wsgi:app &`  
 
 The website was now available at the bought domain! But there was one final issue in that the CSS wasn't loading properly. This was fixed by first of all changing the name from style.css to styles.css (convention), creating a subdirectory in static called css and placing it there rather than just in static (once again; convention that I didn't follow haha) and using the correct HTML link tag: Changing  
-<link href="/static/styles.css" rel="stylesheet">  
+`<link href="/static/styles.css" rel="stylesheet">`  
 to  
 <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">  
 nginx was also adjusted to be correct (specifically the path to static) and restarted.  
