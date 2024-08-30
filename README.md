@@ -15,7 +15,7 @@ This is a project that is rather silly in nature and simply a fun showcase of th
 * Flask
 * Amazon Rekognition
 * Amazon S3
-* SQlite
+* SQLite
 * Elastic Beanstalk
 * Route 53
 
