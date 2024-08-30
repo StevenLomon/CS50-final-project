@@ -18,7 +18,7 @@ I'm thinking to build the web application in Flask but eventually maybe migrate 
 
 I hope that istherearubberduckinthisimage.com is available to buy!
 
-## Journal
+## Project Journal
 
 ### S3 Bucket and setting up IAM and other AWS set up
 An S3 Bucket was created An IAM User was created that has full access to S3 and AWS Rekognition (I realized mid-project that AWS Rekognition is not available in the Stockholm region haha, so I decided to re-create the Bucket and use Frankfurt (eu-central-1) since Stockholm and Frankfurt are in the same time zone. A list of service availability by region can be found here: https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/)
