@@ -4,14 +4,23 @@ My final project for Harvard's CS50 course!
 Video demo: https://www.youtube.com/watch?v=7oBrnQxvCRE  
 Try it out here: http://istherearubberduckinthisimage.se (HTTP until HTTPS becomes available. DNS changes can take some time to propagate :') )  
 
-!["Project architecture diagram"](/project-architecure-diagram.png "Project architecture diagram")
-
 I believe really got to practice taking imperfect action and fine tuning as I go which is super important when it comes to coding and large projects. Not getting crippled by analysis paralysis and instead being solution oriented. Failing forward!
 
 ## Description
 Allows the user to either upload an image or turn on their web camera and have the application detect if there is a rubber duck present in the picture/camera! :)
 
 This is a project that is rather silly in nature and simply a fun showcase of this detection / AI image labeling technology. But it can easily be adjusted for someone more useful in the real world such as identifying products in a store for inventory management, smart surveillance systems or identifying suspicious objects in the streets.
+
+## Technologies used and project architecture
+* Flask
+* Amazon Rekognition
+* Amazon S3
+* SQlite
+* Elastic Beanstalk
+* Route 53
+
+The project follows the following architecture:
+!["Project architecture diagram"](/project-architecure-diagram.png "Project architecture diagram")
 
 ## Starting vision
 My complete starting vision now writing on the 5th of Aug 2024: There will be a front-end web application with the title "Is there a Rubber Duck in this Image?" and the option to choose Upload Image or Turn on Camera. If the user uploads an image, the image will display on the screen and one of two things will happen. 1: There is no rubber duck in the image and so there are no bounding boxes applied. There is a text below the image that will say "No rubber duck detected :(". 2: There is a rubber duck in the image and so a bounding box will surround it with a percentage of how sure the model is that it is indeed a rubber duck. Below the image, the text "Rubber duck detected! :))" will be displayed. If the user instead presses Turn on Camera, they will be asked for permission to turn on the camera of their computer. If no rubber duck is visible for the camera as it opens, there will be a text under the camera window saying "No rubber duck detected." As soon as a rubber duck enters the periphery of the camera, the text will be changed to "Rubber duck detected! :)". I don't think bounding boxes will be implemented in this mode but we'll see!
