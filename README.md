@@ -1,4 +1,4 @@
-# Is there a Rubber Duck in this Image?
+# Rubber Duck Detector: Is there a rubber duck in this image?
 
 ![A GIF showcasing the project. Two images of rubber ducks are being uploaded on the front-end and both times, the web app is able to detect that the images contain rubber ducks with bounding boxes and 85%+ certainty](/RubberDuckDetector.gif)
 
