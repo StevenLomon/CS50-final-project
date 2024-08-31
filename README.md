@@ -9,7 +9,9 @@ Try it out here: http://istherearubberduckinthisimage.se (HTTP until HTTPS becom
 I believe really got to practice taking imperfect action and fine tuning as I go which is super important when it comes to coding and large projects. Not getting crippled by analysis paralysis and instead being solution oriented. Failing forward!
 
 ## Description
-Allows the user to either upload an image or turn on their web camera and have the application detect if there is a rubber duck present in the picture/camera! :)
+Allows the user to either upload an image or turn on their web camera (will begin coding this in the near future!) and have the application detect if there is a rubber duck present in the picture/camera! :)
+
+The web app is built completely in Python using the Flask framework. It uses Amazon Rekognition for the image labeling, Amazon S3 for the image storage and SQLite to store the results in a database. The web app is deployed using AWS Elastic Beanstalk to a bought domain using Amazon Route 53.
 
 This is a project that is rather silly in nature and simply a fun showcase of this detection / AI image labeling technology. But it can easily be adjusted for someone more useful in the real world such as identifying products in a store for inventory management, smart surveillance systems or identifying suspicious objects in the streets.
 
@@ -18,8 +20,8 @@ This is a project that is rather silly in nature and simply a fun showcase of th
 * Amazon Rekognition
 * Amazon S3
 * SQLite
-* Elastic Beanstalk
-* Route 53
+* AWS Elastic Beanstalk
+* Amazon Route 53
 
 The project uses the following architecture:
 !["Project architecture diagram"](/project-architecure-diagram.png "Project architecture diagram")
