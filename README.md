@@ -1,5 +1,7 @@
 # Is there a Rubber Duck in this Image?
 
+![A GIF showcasing the project. Two images of rubber ducks are being uploaded on the front-end and both times, the web app is able to detect that the images contain rubber ducks with bounding boxes and 85%+ certainty](/RubberDuckDetector.gif)
+
 My final project for Harvard's CS50 course!  
 Video demo: https://www.youtube.com/watch?v=7oBrnQxvCRE  
 Try it out here: http://istherearubberduckinthisimage.se (HTTP until HTTPS becomes available. DNS changes can take some time to propagate :') )  
